@@ -1,0 +1,11 @@
+{
+  "name": "omnichannel-platform",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present && npm run test:admin-cache",
+    "test:admin-cache": "node --test scripts/admin-cache-policy.test.mjs scripts/admin-multitenant.test.mjs",
+    "dev:gateway": "npm run dev -w @omnichannel/gateway"
+  }
+}

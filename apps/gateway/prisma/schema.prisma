@@ -1,0 +1,729 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+enum CommercialOutcomeStatus {
+  PENDING
+  WON
+  LOST
+}
+
+enum CommerceLinkKind {
+  ORDER
+  PAYMENT
+}
+
+enum CommerceVerificationStatus {
+  UNVERIFIED
+  VERIFIED
+  REJECTED
+}
+
+enum HumanFeedbackVerdict {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+enum DatasetVersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DatasetExampleLabel {
+  GOOD
+  BAD
+}
+
+enum AutomaticEvaluationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PromptVersionStatus {
+  DRAFT
+  APPROVED
+  RETIRED
+}
+
+enum PromptReleaseKind {
+  ACTIVE
+  CANARY
+  ROLLBACK
+}
+
+enum PromptReleaseStatus {
+  ACTIVE
+  ENDED
+}
+
+enum LearningCandidateKind {
+  BEHAVIORAL_TACTIC
+  BUSINESS_FACT
+  COMMERCIAL_OFFER
+}
+
+enum LearningCandidateStatus {
+  GATHERING
+  READY_FOR_REVIEW
+  BLOCKED_GROUNDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum LearningCandidateRisk {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum LearningEvidencePolarity {
+  SUPPORTS
+  CONTRADICTS
+  CONTEXT
+}
+
+enum LearningReviewDecision {
+  APPROVE
+  REJECT
+  REOPEN
+}
+
+enum LearningAgentRole {
+  INTAKE
+  SALES
+  CUSTOMER_CARE
+  TECHNICAL
+}
+
+enum ProviderScope {
+  ALL
+  SELECTED
+}
+
+enum AdminRole {
+  PLATFORM_ADMIN
+  TENANT_USER
+}
+
+enum AdminAuthSource {
+  LOCAL
+  NEXUS
+}
+
+model Tenant {
+  id                   String                      @id @default(cuid())
+  slug                 String                      @unique
+  name                 String
+  active               Boolean                     @default(true)
+  settings             Json                        @default("{}")
+  createdAt            DateTime                    @default(now())
+  providers            ProviderConfig[]
+  providerAccesses     ProviderTenantAccess[]
+  adminUsers           AdminUserTenant[]
+  documents            KnowledgeDocument[]
+  toolConfigs          ToolConfig[]
+  conversations        Conversation[]
+  logs                 AiLog[]
+  commercialOutcomes   CommercialOutcome[]
+  commerceLinks        CommerceLink[]
+  humanFeedback        HumanFeedback[]
+  evaluationDatasets   EvaluationDataset[]
+  datasetVersions      DatasetVersion[]
+  datasetExamples      DatasetExample[]
+  automaticEvaluations AutomaticEvaluation[]
+  promptDefinitions    PromptDefinition[]
+  promptVersions       PromptVersion[]
+  promptComparisons    PromptComparison[]
+  promptReleases       PromptRelease[]
+  semanticCache        SemanticCacheEntry[]
+  learningCandidates   LearningCandidate[]
+  learningEvidence     LearningCandidateEvidence[]
+  learningReviews      LearningCandidateReview[]
+
+  @@index([active, name])
+}
+
+model ProviderConfig {
+  id              String                 @id @default(cuid())
+  tenantId        String?
+  tenant          Tenant?                @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  type            String
+  name            String                 @unique
+  enabled         Boolean                @default(false)
+  priority        Int                    @default(100)
+  model           String
+  baseUrl         String?
+  encryptedApiKey String?
+  options         Json                   @default("{}")
+  scope           ProviderScope          @default(ALL)
+  tenantAccesses  ProviderTenantAccess[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId, enabled, priority])
+  @@index([tenantId, type])
+  @@index([scope, enabled, priority])
+}
+
+model ProviderTenantAccess {
+  providerConfigId String
+  providerConfig   ProviderConfig @relation(fields: [providerConfigId], references: [id], onDelete: Cascade)
+  tenantId         String
+  tenant           Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+
+  @@id([providerConfigId, tenantId])
+  @@index([tenantId, providerConfigId])
+}
+
+model AdminUser {
+  id                String            @id @default(cuid())
+  email             String            @unique
+  name              String
+  passwordHash      String
+  authSource        AdminAuthSource   @default(LOCAL)
+  externalSubject   String?
+  role              AdminRole         @default(TENANT_USER)
+  active            Boolean           @default(true)
+  memberships       AdminUserTenant[]
+  sessions          AdminSession[]
+  passwordChangedAt DateTime          @default(now())
+  lastLoginAt       DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([authSource, externalSubject])
+  @@index([active, role])
+}
+
+model AdminUserTenant {
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@id([userId, tenantId])
+  @@index([tenantId, userId])
+}
+
+model AdminSession {
+  id         String    @id
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt, revokedAt])
+}
+
+model ToolConfig {
+  id            String   @id @default(cuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name          String
+  enabled       Boolean  @default(false)
+  endpoint      String?
+  encryptedAuth String?
+  timeoutMs     Int      @default(10000)
+  updatedAt     DateTime @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId, enabled])
+}
+
+model LocationCache {
+  key         String   @id
+  query       String
+  latitude    Float
+  longitude   Float
+  displayName String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expiresAt])
+}
+
+model KnowledgeDocument {
+  id         String                      @id @default(cuid())
+  tenantId   String
+  tenant     Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source     String
+  externalId String
+  title      String
+  content    String
+  metadata   Json                        @default("{}")
+  checksum   String
+  embedding  Unsupported("vector(384)")?
+  updatedAt  DateTime                    @updatedAt
+
+  @@unique([tenantId, source, externalId])
+  @@index([tenantId, source])
+}
+
+model Conversation {
+  id                   String                      @id @default(cuid())
+  tenantId             String
+  tenant               Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  externalId           String
+  status               String                      @default("active")
+  state                Json                        @default("{}")
+  summary              String?
+  messages             ConversationMessage[]
+  commercialOutcomes   CommercialOutcome[]
+  commerceLinks        CommerceLink[]
+  humanFeedback        HumanFeedback[]
+  datasetExamples      DatasetExample[]
+  automaticEvaluations AutomaticEvaluation[]
+  learningEvidence     LearningCandidateEvidence[]
+  updatedAt            DateTime                    @updatedAt
+
+  @@unique([tenantId, externalId])
+  @@unique([tenantId, id])
+}
+
+model ConversationMessage {
+  id              String          @id @default(cuid())
+  conversationId  String
+  conversation    Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  externalId      String?
+  role            String
+  content         String
+  provider        String?
+  promptVersionId String?
+  /// Cross-model tenant ownership is enforced by the
+  /// ConversationMessage_prompt_tenant_guard database constraint trigger.
+  promptVersion   PromptVersion?  @relation(fields: [promptVersionId], references: [id], onDelete: SetNull)
+  humanFeedback   HumanFeedback[]
+  createdAt       DateTime        @default(now())
+
+  @@unique([conversationId, externalId])
+  @@unique([conversationId, id])
+  @@index([conversationId, createdAt])
+  @@index([promptVersionId])
+}
+
+model AiLog {
+  id                     String         @id @default(cuid())
+  tenantId               String
+  tenant                 Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationExternalId String?
+  provider               String?
+  model                  String?
+  latencyMs              Int?
+  inputTokens            Int?
+  outputTokens           Int?
+  estimatedCost          Decimal?       @db.Decimal(12, 6)
+  tools                  Json           @default("[]")
+  fallback               Boolean        @default(false)
+  level                  String         @default("info")
+  message                String?
+  promptVersionId        String?
+  promptVersion          PromptVersion? @relation(fields: [tenantId, promptVersionId], references: [tenantId, id], onDelete: SetNull)
+  ragSources             Json           @default("[]")
+  cacheHit               Boolean        @default(false)
+  createdAt              DateTime       @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([promptVersionId])
+}
+
+model CommercialOutcome {
+  id             String                  @id @default(cuid())
+  tenantId       String
+  tenant         Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation            @relation(fields: [tenantId, conversationId], references: [tenantId, id], onDelete: Cascade)
+  status         CommercialOutcomeStatus @default(PENDING)
+  source         String
+  confidence     Decimal                 @db.Decimal(5, 4)
+  evidence       Json                    @default("[]")
+  revision       Int
+  supersedesId   String?
+  supersedes     CommercialOutcome?      @relation("OutcomeRevision", fields: [tenantId, conversationId, supersedesId], references: [tenantId, conversationId, id], onDelete: SetNull)
+  revisions      CommercialOutcome[]     @relation("OutcomeRevision")
+  createdBy      String?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@unique([conversationId, revision])
+  @@unique([tenantId, conversationId, id])
+  @@index([tenantId, status, createdAt])
+  @@index([conversationId, createdAt])
+}
+
+model CommerceLink {
+  id                   String                     @id @default(cuid())
+  tenantId             String
+  tenant               Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId       String
+  conversation         Conversation               @relation(fields: [tenantId, conversationId], references: [tenantId, id], onDelete: Cascade)
+  kind                 CommerceLinkKind
+  source               String
+  externalId           String
+  status               String
+  value                Decimal?                   @db.Decimal(14, 2)
+  currency             String?                    @db.VarChar(3)
+  metadata             Json                       @default("{}")
+  verificationStatus   CommerceVerificationStatus @default(UNVERIFIED)
+  verificationEvidence Json                       @default("{}")
+  observedAt           DateTime?
+  verifiedAt           DateTime?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+
+  @@unique([tenantId, kind, source, externalId])
+  @@index([tenantId, conversationId, verificationStatus])
+  @@index([tenantId, status])
+}
+
+model HumanFeedback {
+  id               String               @id @default(cuid())
+  tenantId         String
+  tenant           Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId   String
+  conversation     Conversation         @relation(fields: [tenantId, conversationId], references: [tenantId, id], onDelete: Cascade)
+  messageId        String?
+  message          ConversationMessage? @relation(fields: [conversationId, messageId], references: [conversationId, id], onDelete: SetNull)
+  verdict          HumanFeedbackVerdict
+  score            Int?
+  comment          String?
+  expectedResponse String?
+  reviewerId       String
+  source           String               @default("admin")
+  metadata         Json                 @default("{}")
+  datasetExamples  DatasetExample[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId, conversationId, createdAt])
+  @@index([messageId])
+}
+
+model EvaluationDataset {
+  id          String           @id @default(cuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  versions    DatasetVersion[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, id])
+  @@index([tenantId, updatedAt])
+}
+
+model DatasetVersion {
+  id               String               @id @default(cuid())
+  tenantId         String
+  tenant           Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  datasetId        String
+  dataset          EvaluationDataset    @relation(fields: [tenantId, datasetId], references: [tenantId, id], onDelete: Cascade)
+  version          Int
+  status           DatasetVersionStatus @default(DRAFT)
+  basedOnVersionId String?
+  basedOnVersion   DatasetVersion?      @relation("DatasetVersionParent", fields: [tenantId, datasetId, basedOnVersionId], references: [tenantId, datasetId, id], onDelete: SetNull)
+  derivedVersions  DatasetVersion[]     @relation("DatasetVersionParent")
+  checksum         String
+  notes            String?
+  createdBy        String
+  publishedBy      String?
+  publishedAt      DateTime?
+  examples         DatasetExample[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([datasetId, version])
+  @@unique([tenantId, datasetId, id])
+  @@unique([tenantId, id])
+  @@index([tenantId, status, createdAt])
+}
+
+model DatasetExample {
+  id                    String               @id @default(cuid())
+  tenantId              String
+  tenant                Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  datasetVersionId      String
+  datasetVersion        DatasetVersion       @relation(fields: [tenantId, datasetVersionId], references: [tenantId, id], onDelete: Cascade)
+  conversationId        String?
+  conversation          Conversation?        @relation(fields: [tenantId, conversationId], references: [tenantId, id], onDelete: SetNull)
+  humanFeedbackId       String?
+  humanFeedback         HumanFeedback?       @relation(fields: [tenantId, humanFeedbackId], references: [tenantId, id], onDelete: SetNull)
+  automaticEvaluationId String?
+  automaticEvaluation   AutomaticEvaluation? @relation(fields: [tenantId, automaticEvaluationId], references: [tenantId, id], onDelete: SetNull)
+  label                 DatasetExampleLabel
+  input                 String
+  response              String
+  expectedResponse      String?
+  rationale             String?
+  source                String
+  metadata              Json                 @default("{}")
+  fingerprint           String
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@unique([datasetVersionId, fingerprint])
+  @@index([tenantId, label, createdAt])
+  @@index([conversationId])
+}
+
+model AutomaticEvaluation {
+  id               String                      @id @default(cuid())
+  tenantId         String
+  tenant           Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId   String
+  conversation     Conversation                @relation(fields: [tenantId, conversationId], references: [tenantId, id], onDelete: Cascade)
+  promptVersionId  String?
+  promptVersion    PromptVersion?              @relation(fields: [tenantId, promptVersionId], references: [tenantId, id], onDelete: SetNull)
+  status           AutomaticEvaluationStatus   @default(PENDING)
+  evaluator        String
+  evaluatorVersion String
+  overallScore     Decimal?                    @db.Decimal(5, 4)
+  dimensions       Json                        @default("{}")
+  recommendations  Json                        @default("[]")
+  evidence         Json                        @default("[]")
+  error            String?
+  inputSnapshot    Json                        @default("{}")
+  datasetExamples  DatasetExample[]
+  learningEvidence LearningCandidateEvidence[]
+  completedAt      DateTime?
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+
+  @@unique([tenantId, id])
+  @@index([tenantId, conversationId, createdAt])
+  @@index([tenantId, status, createdAt])
+  @@index([promptVersionId])
+}
+
+/// A small, reviewable hypothesis distilled from many conversations. Repeated
+/// wording is evidence of recurrence, never proof that the content is true.
+model LearningCandidate {
+  id                        String                      @id @default(cuid())
+  tenantId                  String
+  tenant                    Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fingerprint               String
+  key                       String
+  agentRole                 LearningAgentRole
+  kind                      LearningCandidateKind
+  title                     String
+  proposal                  String
+  rationale                 String
+  status                    LearningCandidateStatus     @default(GATHERING)
+  risk                      LearningCandidateRisk
+  confidence                Decimal                     @default(0) @db.Decimal(5, 4)
+  evidenceCount             Int                         @default(0)
+  supportingCount           Int                         @default(0)
+  contradictingCount        Int                         @default(0)
+  distinctConversationCount Int                         @default(0)
+  distinctCustomerCount     Int                         @default(0)
+  verifiedOutcomeCount      Int                         @default(0)
+  requiresGrounding         Boolean                     @default(false)
+  groundingVerified         Boolean                     @default(false)
+  groundingSources          Json                        @default("[]")
+  evidenceSummary           Json                        @default("{}")
+  windowStartedAt           DateTime?
+  windowEndedAt             DateTime?
+  approvedBy                String?
+  approvedAt                DateTime?
+  rejectedBy                String?
+  rejectedAt                DateTime?
+  rejectionReason           String?
+  evidence                  LearningCandidateEvidence[]
+  reviews                   LearningCandidateReview[]
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+
+  @@unique([tenantId, fingerprint])
+  @@unique([tenantId, id])
+  @@index([tenantId, status, risk, updatedAt])
+  @@index([tenantId, agentRole, kind, key])
+}
+
+/// At most one current signal per candidate and conversation is retained. A
+/// later evaluation updates this row instead of creating transient snapshots.
+model LearningCandidateEvidence {
+  id                    String                   @id @default(cuid())
+  tenantId              String
+  tenant                Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidateId           String
+  candidate             LearningCandidate        @relation(fields: [tenantId, candidateId], references: [tenantId, id], onDelete: Cascade)
+  conversationId        String?
+  conversation          Conversation?            @relation(fields: [tenantId, conversationId], references: [tenantId, id], onDelete: SetNull)
+  automaticEvaluationId String?
+  automaticEvaluation   AutomaticEvaluation?     @relation(fields: [tenantId, automaticEvaluationId], references: [tenantId, id], onDelete: SetNull)
+  customerFingerprint   String?
+  polarity              LearningEvidencePolarity
+  sourceType            String
+  sourceId              String?
+  outcomeVerified       Boolean                  @default(false)
+  summary               Json                     @default("{}")
+  fingerprint           String
+  observedAt            DateTime
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  @@unique([candidateId, fingerprint])
+  @@unique([tenantId, id])
+  @@index([tenantId, candidateId, observedAt])
+  @@index([tenantId, conversationId])
+  @@index([automaticEvaluationId])
+  @@index([tenantId, customerFingerprint])
+}
+
+model LearningCandidateReview {
+  id          String                 @id @default(cuid())
+  tenantId    String
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   LearningCandidate      @relation(fields: [tenantId, candidateId], references: [tenantId, id], onDelete: Cascade)
+  decision    LearningReviewDecision
+  reviewerId  String
+  note        String?
+  batchId     String?
+  snapshot    Json                   @default("{}")
+  createdAt   DateTime               @default(now())
+
+  @@unique([tenantId, id])
+  @@index([tenantId, candidateId, createdAt])
+  @@index([tenantId, batchId])
+}
+
+model PromptDefinition {
+  id          String             @id @default(cuid())
+  tenantId    String
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  versions    PromptVersion[]
+  comparisons PromptComparison[]
+  releases    PromptRelease[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, id])
+  @@index([tenantId, updatedAt])
+}
+
+model PromptVersion {
+  id                     String                @id @default(cuid())
+  tenantId               String
+  tenant                 Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  promptDefinitionId     String
+  promptDefinition       PromptDefinition      @relation(fields: [tenantId, promptDefinitionId], references: [tenantId, id], onDelete: Cascade)
+  version                Int
+  content                String
+  variables              Json                  @default("[]")
+  metadata               Json                  @default("{}")
+  checksum               String
+  status                 PromptVersionStatus   @default(DRAFT)
+  createdBy              String
+  approvedBy             String?
+  approvedAt             DateTime?
+  retiredAt              DateTime?
+  messages               ConversationMessage[]
+  logs                   AiLog[]
+  evaluations            AutomaticEvaluation[]
+  comparisonsAsBase      PromptComparison[]    @relation("PromptComparisonBase")
+  comparisonsAsCandidate PromptComparison[]    @relation("PromptComparisonCandidate")
+  primaryReleases        PromptRelease[]       @relation("PromptPrimaryVersion")
+  canaryReleases         PromptRelease[]       @relation("PromptCanaryVersion")
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@unique([promptDefinitionId, version])
+  @@unique([promptDefinitionId, checksum])
+  @@unique([tenantId, promptDefinitionId, id])
+  @@unique([tenantId, id])
+  @@index([tenantId, status, createdAt])
+}
+
+model PromptComparison {
+  id                 String           @id @default(cuid())
+  tenantId           String
+  tenant             Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  promptDefinitionId String
+  promptDefinition   PromptDefinition @relation(fields: [tenantId, promptDefinitionId], references: [tenantId, id], onDelete: Cascade)
+  baseVersionId      String
+  baseVersion        PromptVersion    @relation("PromptComparisonBase", fields: [tenantId, promptDefinitionId, baseVersionId], references: [tenantId, promptDefinitionId, id], onDelete: Cascade)
+  candidateVersionId String
+  candidateVersion   PromptVersion    @relation("PromptComparisonCandidate", fields: [tenantId, promptDefinitionId, candidateVersionId], references: [tenantId, promptDefinitionId, id], onDelete: Cascade)
+  diff               Json
+  metrics            Json             @default("{}")
+  decision           String?
+  createdBy          String
+  createdAt          DateTime         @default(now())
+
+  @@unique([tenantId, baseVersionId, candidateVersionId])
+  @@index([tenantId, promptDefinitionId, createdAt])
+}
+
+model PromptRelease {
+  id                 String              @id @default(cuid())
+  tenantId           String
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  promptDefinitionId String
+  promptDefinition   PromptDefinition    @relation(fields: [tenantId, promptDefinitionId], references: [tenantId, id], onDelete: Cascade)
+  primaryVersionId   String
+  primaryVersion     PromptVersion       @relation("PromptPrimaryVersion", fields: [tenantId, promptDefinitionId, primaryVersionId], references: [tenantId, promptDefinitionId, id], onDelete: Restrict)
+  canaryVersionId    String?
+  canaryVersion      PromptVersion?      @relation("PromptCanaryVersion", fields: [tenantId, promptDefinitionId, canaryVersionId], references: [tenantId, promptDefinitionId, id], onDelete: Restrict)
+  canaryPercent      Int                 @default(0)
+  kind               PromptReleaseKind
+  status             PromptReleaseStatus @default(ACTIVE)
+  previousReleaseId  String?
+  previousRelease    PromptRelease?      @relation("PromptReleaseHistory", fields: [tenantId, promptDefinitionId, previousReleaseId], references: [tenantId, promptDefinitionId, id], onDelete: SetNull)
+  nextReleases       PromptRelease[]     @relation("PromptReleaseHistory")
+  reason             String?
+  createdBy          String
+  endedAt            DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@unique([tenantId, promptDefinitionId, id])
+  @@unique([tenantId, id])
+  @@index([tenantId, promptDefinitionId, status, createdAt])
+  @@index([primaryVersionId])
+  @@index([canaryVersionId])
+}
+
+model SemanticCacheEntry {
+  id            String                     @id @default(cuid())
+  tenantId      String
+  tenant        Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  namespace     String                     @default("rag")
+  corpusVersion String
+  queryHash     String
+  embedding     Unsupported("vector(384)")
+  payload       Json
+  hitCount      Int                        @default(0)
+  lastHitAt     DateTime?
+  expiresAt     DateTime
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+
+  @@unique([tenantId, namespace, corpusVersion, queryHash])
+  @@index([tenantId, namespace, corpusVersion, expiresAt])
+}

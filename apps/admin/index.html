@@ -1,0 +1,2021 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="gateway-api-base" content="">
+  <meta name="sso-login-url" content="">
+  <title>Console Omnichannel IA</title>
+  <style>
+    :root{--primary:#2563eb;--primary-soft:#eff6ff;--ink:#172033;--muted:#667085;--line:#e4e7ec;--surface:#fff;--canvas:#f4f6f9;--success:#067647;--danger:#b42318;--warning:#b54708}
+    *{box-sizing:border-box}body{margin:0;font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--canvas);color:var(--ink)}
+    button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+    .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 10%,var(--primary-soft),transparent 38%),var(--canvas)}
+    .auth-card{width:min(480px,100%);padding:34px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 60px #10182814}
+    .product-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:var(--primary);color:#fff;font-weight:800;letter-spacing:.04em}
+    h1,h2,h3,p{margin-top:0}h1{font-size:24px;margin:14px 0 6px}h2{font-size:20px;margin-bottom:5px}h3{font-size:15px}.muted,small{color:var(--muted)}
+    label{display:block;font-size:12px;font-weight:650;color:#344054;margin-bottom:5px}.field{margin-bottom:13px}
+    input,select,textarea{width:100%;padding:9px 11px;border:1px solid #cfd5df;border-radius:8px;background:#fff;color:var(--ink);outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 13%,transparent)}textarea{resize:vertical;min-height:80px}
+    input[type=checkbox]{width:auto;accent-color:var(--primary)}input[type=color]{height:42px;padding:4px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:8px;padding:9px 14px;background:var(--primary);color:#fff;font-weight:650;text-decoration:none}
+    .btn:hover{filter:brightness(.96)}.btn:disabled{opacity:.55;cursor:not-allowed}.btn.secondary{background:#475467}.btn.ghost{background:#fff;color:#344054;border:1px solid #d0d5dd}.btn.danger{background:#fff;color:var(--danger);border:1px solid #fda29b}.btn.small{padding:6px 9px;font-size:12px}
+    .full{width:100%}.inline{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;margin:0}
+    .app-shell{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
+    .sidebar{position:sticky;top:0;height:100vh;background:#101828;color:#d0d5dd;padding:22px 15px;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:11px;padding:2px 8px 24px}.brand-logo{width:38px;height:38px;border-radius:10px;background:var(--primary);display:grid;place-items:center;color:#fff;font-weight:800;overflow:hidden}.brand-logo img{width:100%;height:100%;object-fit:cover}.brand strong{display:block;color:#fff}.brand small{color:#98a2b3}
+    .nav{display:grid;gap:4px}.nav button{border:0;background:transparent;color:#d0d5dd;text-align:left;padding:10px 12px;border-radius:8px}.nav button:hover,.nav button.active{background:#344054;color:#fff}.sidebar-foot{margin-top:auto;padding:12px 8px}.sidebar-foot button{width:100%}
+    .workspace{min-width:0}.topbar{min-height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 28px;position:sticky;top:0;z-index:4}.topbar h1{font-size:18px;margin:0}.topbar-context{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}.tenant-context{display:flex;align-items:center;gap:8px}.tenant-context label{margin:0;white-space:nowrap}.tenant-context select{width:min(280px,40vw);padding:7px 9px}.status-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}.dot{width:8px;height:8px;border-radius:50%;background:#98a2b3}.dot.ok{background:#12b76a}.dot.bad{background:#f04438}
+    .content{padding:26px 28px 50px;max-width:1500px;margin:0 auto}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 1px 2px #10182808}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}
+    .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:13px}.col-1{grid-column:span 1}.col-2{grid-column:span 2}.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}.metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}.metric span{color:var(--muted);font-size:12px}.metric strong{display:block;font-size:24px;margin-top:6px}.metric small{display:block;margin-top:4px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;min-width:780px}th,td{text-align:left;padding:10px 11px;border-bottom:1px solid #eaecf0;vertical-align:top}th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#667085;background:#f9fafb;white-space:nowrap}tr:last-child td{border-bottom:0}td input,td select{min-width:105px;padding:7px}.cell-stack{display:grid;gap:6px}.actions{display:flex;gap:6px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:11px;font-weight:650}.badge.ok{background:#ecfdf3;color:var(--success)}.badge.bad{background:#fef3f2;color:var(--danger)}.badge.warn{background:#fffaeb;color:var(--warning)}
+    .empty{padding:28px;text-align:center;color:var(--muted)}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;background:#f2f4f7;padding:3px 6px;border-radius:5px;word-break:break-all}
+    .logo-preview{height:90px;border:1px dashed #cfd5df;border-radius:10px;display:grid;place-items:center;overflow:hidden;background:#f9fafb;color:#667085}.logo-preview img{max-width:100%;max-height:100%;object-fit:contain}
+    .notice{position:fixed;right:22px;bottom:22px;z-index:50;max-width:min(430px,calc(100vw - 44px));padding:12px 15px;border-radius:9px;background:#172033;color:#fff;box-shadow:0 12px 35px #10182838}.notice.error{background:#7a271a}
+    .overlay{position:fixed;inset:0;z-index:30;background:#101828b8;display:grid;place-items:center;padding:20px}.wizard{width:min(900px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#fff;border-radius:18px;box-shadow:0 28px 90px #0005}.wizard-head{padding:24px 28px;border-bottom:1px solid var(--line)}.steps{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:18px}.step-dot{height:5px;border-radius:5px;background:#e4e7ec}.step-dot.active,.step-dot.done{background:var(--primary)}.wizard-body{padding:28px}.wizard-panel{display:none}.wizard-panel.active{display:block}.wizard-actions{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+    .infra-list{display:grid;gap:9px}.infra-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--line);border-radius:9px}
+    .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.quick-link{display:block;width:100%;padding:15px;text-align:left;border:1px solid #bfdbfe;border-radius:10px;background:var(--primary-soft);color:var(--ink)}.quick-link:hover{border-color:var(--primary);filter:none}.quick-link strong{display:block;margin-bottom:4px;color:var(--primary)}.quick-link small{display:block;line-height:1.45}
+    .callout{padding:15px 17px;margin-bottom:16px;border:1px solid #bfdbfe;border-left:4px solid var(--primary);border-radius:10px;background:var(--primary-soft)}.callout h3{margin-bottom:5px}.callout p:last-child{margin-bottom:0}.callout ol{margin:8px 0 10px;padding-left:20px}.callout li{margin:4px 0}.security-note{padding-top:9px;border-top:1px solid #bfdbfe;font-size:12px;color:#344054}
+    .improvement-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.improvement-metric{padding:15px;border:1px solid var(--line);border-radius:10px;background:#fff}.improvement-metric span{display:block;color:var(--muted);font-size:12px}.improvement-metric strong{display:block;margin-top:5px;font-size:21px;word-break:break-word}.focus-bar{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.focus-bar .field{flex:1 1 300px;margin:0}.json-preview{display:block;max-width:420px;white-space:normal;word-break:break-word;font-size:11px}.subsection-title{margin:24px 0 12px}.form-note{margin:-4px 0 13px;font-size:12px;color:var(--muted)}
+    .auth-primary{margin-top:18px}.technical-access{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}.technical-access summary{cursor:pointer;color:#475467;font-weight:650}.technical-access-body{padding-top:16px}.auth-choice{margin-bottom:16px}.multi-select{min-height:98px}.global-only-note{padding:12px;border:1px solid var(--line);border-radius:9px;background:#f9fafb;color:var(--muted)}.capability-hidden{display:none!important}
+    .recovery-account summary{cursor:pointer;list-style-position:inside}.recovery-account summary strong{display:inline-block;margin-right:8px}.recovery-account-body{padding-top:18px;border-top:1px solid var(--line);margin-top:15px}
+    .rag-document-row.active td{background:var(--primary-soft)}.rag-editor-row td{padding:0;background:#f8faff}.rag-inline-editor{padding:18px;border-left:4px solid var(--primary)}.rag-inline-editor .card-head{margin-bottom:8px}.rag-inline-editor textarea{background:#fff}
+    .loading{opacity:.6;pointer-events:none}.mobile-nav{display:none}
+    @media(max-width:1050px){.metric-grid,.improvement-metrics{grid-template-columns:repeat(2,1fr)}.col-1,.col-2,.col-3,.col-4{grid-column:span 6}}
+    @media(max-width:760px){.app-shell{display:block}.sidebar{position:static;height:auto;padding:12px}.brand{padding-bottom:10px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}.sidebar-foot{display:none}.topbar{padding:12px 16px;align-items:flex-start}.topbar-context{display:grid;justify-items:end}.tenant-context select{width:min(230px,58vw)}.content{padding:20px 14px}.metric-grid,.quick-links,.improvement-metrics{grid-template-columns:1fr}.grid{display:block}.grid>[class*=col-]{margin-bottom:12px}.page-head{display:block}.steps{gap:3px}.wizard-body,.wizard-head{padding:20px}.card{padding:14px}}
+  </style>
+</head>
+<body>
+  <div id="authView" class="auth-wrap">
+    <form id="loginForm" class="auth-card">
+      <div class="product-mark">IA</div>
+      <h1>Console Omnichannel</h1>
+      <p class="muted">Entre com uma conta administrativa local. Um provedor SSO externo pode ser configurado separadamente.</p>
+      <a id="nexusLoginButton" class="btn full auth-primary hidden" href="#">Entrar com SSO</a>
+      <details id="technicalAccess" class="technical-access" open>
+        <summary>Acesso administrativo</summary>
+        <div class="technical-access-body">
+          <div class="field auth-choice">
+            <label for="loginMode">Forma de acesso</label>
+            <select id="loginMode"><option value="token">ADMIN_TOKEN de bootstrap</option><option value="credentials">E-mail e senha</option></select>
+          </div>
+          <div class="field">
+            <label for="gatewayApiBase">URL do AI Gateway</label>
+            <input id="gatewayApiBase" type="url" inputmode="url" placeholder="http://localhost:3001">
+            <small>Somente o endereço é lembrado; a credencial de sessão fica restrita a esta aba.</small>
+          </div>
+          <div id="tokenLoginFields" class="field">
+            <label for="adminToken">Token administrativo</label>
+            <input id="adminToken" type="password" autocomplete="current-password" placeholder="ADMIN_TOKEN" required>
+          </div>
+          <div id="credentialLoginFields" class="hidden">
+            <div class="field"><label for="loginUsername">E-mail</label><input id="loginUsername" type="email" autocomplete="username"></div>
+            <div class="field"><label for="loginPassword">Senha</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
+          </div>
+          <button id="loginButton" class="btn secondary full" type="submit">Entrar pelo acesso técnico</button>
+        </div>
+      </details>
+    </form>
+  </div>
+
+  <div id="shell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div id="sidebarLogo" class="brand-logo">IA</div>
+        <div><strong id="sidebarBotName">Assistente IA</strong><small id="sidebarCompany">Operação omnichannel</small></div>
+      </div>
+      <nav class="nav" aria-label="Navegação principal">
+        <button class="active" data-page="overview">Visão geral</button>
+        <button data-page="tenants" data-capability="manageTenants">Bots / empresas</button>
+        <button data-page="users" data-capability="manageUsers">Usuários / acessos</button>
+        <button data-page="identity">Identidade</button>
+        <button data-page="ai">IA e providers / chaves</button>
+        <button data-page="chatwoot">Chatwoot</button>
+        <button data-page="knowledge">Conhecimento / RAG</button>
+        <button data-page="tools">Tools</button>
+        <button data-page="operations">Operação / regras</button>
+        <button data-page="improvement">Melhoria contínua</button>
+      </nav>
+      <div class="sidebar-foot"><button id="logoutButton" class="btn ghost" type="button">Encerrar sessão</button></div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <h1 id="pageTitle">Visão geral</h1>
+        <div class="topbar-context">
+          <div class="tenant-context"><label for="tenantSelector">Bot / empresa ativa</label><select id="tenantSelector" aria-label="Bot e empresa ativos"></select></div>
+          <div id="gatewayStatus" class="status-line"><span class="dot"></span><span>Verificando Gateway</span></div>
+        </div>
+      </header>
+      <main class="content">
+        <section id="page-overview" class="page active">
+          <div class="page-head"><div><h2>Visão geral</h2><p class="muted">Saúde da infraestrutura e atividade recente.</p></div><button class="btn ghost" data-action="reload-all">Atualizar</button></div>
+          <div class="metric-grid">
+            <div class="metric"><span>Banco de dados</span><strong id="metricDatabase">—</strong><small id="metricDatabaseDetail">Aguardando</small></div>
+            <div class="metric"><span>Providers ativos</span><strong id="metricProviders">—</strong><small id="metricProvidersDetail">Aguardando</small></div>
+            <div class="metric"><span>Base de conhecimento</span><strong id="metricDocuments">—</strong><small>fontes indexadas</small></div>
+            <div class="metric"><span>Conversas</span><strong id="metricConversations">—</strong><small>últimas 100</small></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Configuração rápida</h3><p class="muted">Use estes atalhos depois de entrar no Admin.</p></div></div>
+            <div class="quick-links">
+              <button class="quick-link" type="button" data-page="ai" data-capability="manageProviders"><strong>1. Cadastrar chaves de IA</strong><small>Abra “IA e providers / chaves”, habilite cada provider, defina a prioridade, salve a API key e execute o teste de conexão.</small></button>
+              <button class="quick-link" type="button" data-page="knowledge"><strong>2. Importar o conhecimento (RAG)</strong><small>Abra “Conhecimento / RAG”, selecione a planilha ou outro documento e clique em “Importar e indexar”.</small></button>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="col-6 card"><div class="card-head"><div><h3>Infraestrutura</h3><p class="muted">Resultado do setup e testes de saúde.</p></div></div><div id="overviewInfrastructure" class="infra-list"></div></div>
+            <div class="col-6 card"><div class="card-head"><div><h3>Atividade recente</h3><p class="muted">Últimos eventos registrados pelo Gateway.</p></div></div><div id="recentActivity"></div></div>
+          </div>
+        </section>
+
+        <section id="page-tenants" class="page">
+          <div class="page-head"><div><h2>Bots / empresas</h2><p class="muted">Cada empresa possui identidade, prompts, Chatwoot, RAG, regras e conversas isolados.</p></div><button class="btn ghost" data-action="reload-tenants">Atualizar</button></div>
+          <div class="card">
+            <div class="card-head"><div><h3>Novo bot / empresa</h3><p class="muted">A criação inicial não copia conhecimento nem inventa um canal Chatwoot. O slug identifica a empresa nas integrações.</p></div></div>
+            <div class="grid">
+              <div class="col-3 field"><label for="newTenantName">Nome da empresa</label><input id="newTenantName" placeholder="Empresa Exemplo"></div>
+              <div class="col-3 field"><label for="newTenantBotName">Nome do bot</label><input id="newTenantBotName" placeholder="Atendimento Exemplo"></div>
+              <div class="col-3 field"><label for="newTenantSlug">Slug</label><input id="newTenantSlug" placeholder="empresa-exemplo"></div>
+              <div class="col-2 field"><label class="check" style="margin-top:30px"><input id="newTenantEnabled" type="checkbox" checked> Ativa</label></div>
+              <div class="col-1 field" style="display:flex;align-items:end"><button class="btn full" data-action="create-tenant">Criar</button></div>
+              <div class="col-12"><label class="check"><input id="newTenantDeferIntegrations" type="checkbox" checked> Começar sem Chatwoot e sem conhecimento; configurar cada integração depois</label></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Bots cadastrados</h3><p class="muted">Configurar troca o contexto do painel; nada de uma empresa é carregado na outra.</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Bot</th><th>Slug</th><th>Estado</th><th>ID</th><th>Ações</th></tr></thead><tbody id="tenantsBody"></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="page-users" class="page">
+          <div class="page-head"><div><h2>Usuários e acessos</h2><p class="muted">Gerencie credenciais e atribua cada usuário a uma ou várias empresas.</p></div><button class="btn ghost" data-action="reload-users">Atualizar</button></div>
+          <details class="card recovery-account">
+            <summary><strong>Conta local de recuperação</strong><span class="muted">Acesso técnico do Gateway</span></summary>
+            <div class="recovery-account-body">
+              <p class="muted">Cadastre contas locais e limite cada usuário às empresas autorizadas.</p>
+              <div class="grid">
+                <div class="col-3 field"><label for="newUserUsername">E-mail</label><input id="newUserUsername" type="email" autocomplete="off"></div>
+                <div class="col-3 field"><label for="newUserName">Nome de exibição</label><input id="newUserName"></div>
+                <div class="col-3 field"><label for="newUserPassword">Senha inicial</label><input id="newUserPassword" type="password" autocomplete="new-password"></div>
+                <div class="col-3 field"><label for="newUserRole">Perfil</label><input id="newUserRole" value="TENANT_USER" placeholder="TENANT_USER"></div>
+                <div class="col-8 field"><label for="newUserTenantIds">Empresas permitidas</label><select id="newUserTenantIds" class="multi-select" multiple></select></div>
+                <div class="col-2 field"><label class="check" style="margin-top:30px"><input id="newUserEnabled" type="checkbox" checked> Ativo</label></div>
+                <div class="col-2 field" style="display:flex;align-items:end"><button class="btn secondary full" data-action="create-user">Criar conta local</button></div>
+              </div>
+            </div>
+          </details>
+          <div class="card">
+            <div class="card-head"><div><h3>Usuários cadastrados</h3><p class="muted">Contas recebidas por SSO são somente leitura; contas locais permanecem editáveis.</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Usuário / nome</th><th>Perfil / estado</th><th>Empresas</th><th>Nova senha</th><th>Ação</th></tr></thead><tbody id="usersBody"></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="page-identity" class="page">
+          <div class="page-head"><div><h2>Identidade e mensagens</h2><p class="muted">Personalize a empresa e o comportamento visível do assistente.</p></div><button class="btn" data-action="save-identity">Salvar identidade</button></div>
+          <div class="grid">
+            <div class="col-8 card">
+              <div class="grid">
+                <div class="col-6 field"><label for="companyName">Nome da empresa</label><input id="companyName" placeholder="Minha empresa"></div>
+                <div class="col-6 field"><label for="botName">Nome do assistente</label><input id="botName" placeholder="Assistente virtual"></div>
+                <div class="col-6 field"><label for="language">Idioma</label><select id="language"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option><option value="es">Español</option></select></div>
+                <div class="col-3 field"><label for="primaryColor">Cor principal</label><input id="primaryColor" type="color" value="#2563eb"></div>
+                <div class="col-12 field"><label for="logoValue">Logo (texto, URL HTTPS ou data URL)</label><input id="logoValue" placeholder="https://... ou data:image/..."></div>
+                <div class="col-12 field"><label for="logoFile">Converter imagem para data URL</label><input id="logoFile" type="file" accept="image/*"></div>
+              </div>
+            </div>
+            <div class="col-4 card"><h3>Prévia do logo</h3><div id="logoPreview" class="logo-preview">Sem logo</div><p class="muted" style="margin-top:10px">Imagens pequenas são recomendadas quando salvas como data URL.</p></div>
+            <div class="col-12 card">
+              <div class="grid">
+                <div class="col-4 field"><label for="welcomeMessage">Mensagem de boas-vindas</label><textarea id="welcomeMessage"></textarea></div>
+                <div class="col-4 field"><label for="outOfHoursMessage">Mensagem fora do horário</label><textarea id="outOfHoursMessage"></textarea></div>
+                <div class="col-4 field"><label for="transferMessage">Mensagem de transferência</label><textarea id="transferMessage"></textarea></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-ai" class="page">
+          <div class="page-head"><div><h2>IA e providers / chaves</h2><p class="muted">Prompts, embeddings, modelos, credenciais e ordem de fallback.</p></div></div>
+          <div class="callout">
+            <h3>Bot em configuração: <span id="aiBotContext">—</span></h3>
+            <p>Os prompts abaixo, as regras e o RAG pertencem somente ao bot/empresa ativo no seletor superior. Providers podem ser compartilhados conforme o escopo configurado.</p>
+            <button class="btn ghost small" type="button" data-page="identity">Alterar nome, identidade e mensagens deste bot</button>
+          </div>
+          <div class="callout" data-capability-section="manageProviders">
+            <h3>Onde cadastrar as API keys</h3>
+            <p>Você está em <strong>Admin → IA e providers / chaves</strong>. Na tabela “Providers e fallback”:</p>
+            <ol>
+              <li>Marque o provider como <strong>Habilitado</strong> e defina a prioridade — o menor número responde primeiro.</li>
+              <li>Confira modelo e Base URL, informe a chave no campo <strong>API key</strong> e clique em <strong>Salvar</strong>.</li>
+              <li>Clique em <strong>Testar</strong> e confirme que a saúde ficou “saudável”.</li>
+            </ol>
+            <p><strong>Cloudflare AI:</strong> além do token, informe a Base URL <span class="code">https://api.cloudflare.com/client/v4/accounts/SEU_ACCOUNT_ID/ai/v1</span>, substituindo <span class="code">SEU_ACCOUNT_ID</span> pelo Account ID exibido no dashboard Cloudflare. O token deve ter permissões <strong>Workers AI Read</strong> e <strong>Workers AI Edit</strong>.</p>
+            <p class="security-note"><strong>Persistência e segurança:</strong> as chaves são cifradas pelo Gateway e gravadas no PostgreSQL persistente. Elas sobrevivem a reinícios dos containers; mantenha a <span class="code">GATEWAY_ENCRYPTION_KEY</span> estável e faça backup do banco. Nunca coloque chaves de providers no Cloudflare Pages, em JavaScript/frontend, no Git ou em arquivos publicados. Depois de salvar, a chave não é exibida novamente.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Agentes especializados e prompts</h3><p class="muted">Um único bot atende o canal, mas roteia internamente entre Triagem, Comercial, SAC e Assistência Técnica. O agente de Qualidade valida a saída antes do envio. Regras contra prompt injection e invenção permanecem protegidas no código.</p></div><button class="btn" data-action="save-ai-settings">Salvar IA</button></div>
+            <div class="inline" style="margin-bottom:14px"><span class="badge ok">Triagem ativa</span><span class="badge ok">Comercial ativo</span><span class="badge ok">SAC ativo</span><span class="badge ok">Técnico ativo</span><span class="badge ok">Qualidade ativa</span></div>
+            <div class="grid">
+              <div class="col-12 field"><label for="promptSystem">Base comum / Atendimento inicial</label><textarea id="promptSystem" rows="5"></textarea></div>
+              <div class="col-4 field"><label for="promptCommercial">Agente Comercial</label><textarea id="promptCommercial"></textarea></div>
+              <div class="col-4 field"><label for="promptSupport">Agente Técnico</label><textarea id="promptSupport"></textarea></div>
+              <div class="col-4 field"><label for="promptPostSale">Agente SAC / Pós-venda</label><textarea id="promptPostSale"></textarea></div>
+              <div class="col-3 field"><label for="embeddingProvider">Provider de embeddings</label><select id="embeddingProvider"><option value="local">Local (padrão)</option><option value="ollama">Ollama opcional</option></select></div>
+              <div class="col-4 field"><label for="embeddingBaseUrl">Base URL</label><input id="embeddingBaseUrl" placeholder="Opcional para local"></div>
+              <div class="col-3 field"><label for="embeddingModel">Modelo</label><input id="embeddingModel" placeholder="all-minilm"></div>
+              <div class="col-2 field"><label for="embeddingTimeout">Timeout (ms)</label><input id="embeddingTimeout" type="number" min="1000" value="30000"></div>
+              <div class="col-12"><label class="check"><input id="businessRulesEnabled" type="checkbox"> Usar as regras de negócio configuradas para a empresa ativa</label></div>
+            </div>
+          </div>
+          <div id="providersAccessNote" class="global-only-note hidden">Seu usuário pode configurar prompts desta empresa, mas não possui permissão para administrar providers globais.</div>
+          <div class="card" data-capability-section="manageProviders">
+            <div class="card-head"><div><h3>Providers globais, API keys e fallback</h3><p class="muted">A menor prioridade é tentada primeiro. Cada provider atende todas as empresas ou somente as selecionadas; não existem cópias locais.</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Provider</th><th>Ativo / prioridade</th><th>Escopo</th><th>Modelo / endpoint</th><th>Geração / timeout</th><th>Custos por milhão</th><th>Credencial</th><th>Saúde</th><th>Ações</th></tr></thead><tbody id="providersBody"></tbody></table></div>
+          </div>
+          <div class="card" data-capability-section="manageProviders">
+            <div class="card-head"><div><h3>Nova credencial de provider</h3><p class="muted">Cadastre quantas credenciais forem necessárias, inclusive várias contas do mesmo tipo, cada uma com nome, prioridade e escopo próprios.</p></div></div>
+            <div class="grid">
+              <div class="col-3 field"><label for="customProviderType">Tipo</label><select id="customProviderType"><option value="cloudflare">Cloudflare AI</option><option value="openrouter">OpenRouter</option><option value="gemini">Google Gemini</option><option value="ollama">Ollama</option><option value="openai-compatible">OpenAI-compatible</option></select></div>
+              <div class="col-3 field"><label for="customProviderName">Nome desta credencial</label><input id="customProviderName" placeholder="Ex.: Cloudflare principal"></div>
+              <div class="col-6 field"><label for="customProviderUrl">Endpoint base</label><input id="customProviderUrl" type="url" placeholder="https://api.exemplo/v1"></div>
+              <div class="col-3 field"><label for="customProviderModel">Modelo</label><input id="customProviderModel" placeholder="nome-do-modelo"></div>
+              <div class="col-3 field"><label for="customProviderHealth">Health path</label><input id="customProviderHealth" value="/models" disabled></div>
+              <div class="col-3 field"><label for="customProviderKey">API key</label><input id="customProviderKey" type="password" autocomplete="new-password"></div>
+              <div class="col-2 field"><label for="customProviderPriority">Prioridade</label><input id="customProviderPriority" type="number" min="1" value="10"></div>
+              <div class="col-2 field"><label for="customProviderTimeout">Timeout (ms)</label><input id="customProviderTimeout" type="number" min="1000" value="45000"></div>
+              <div class="col-2 field"><label for="customProviderMaxTokens">Máx. tokens</label><input id="customProviderMaxTokens" type="number" min="1" value="600"></div>
+              <div class="col-2 field"><label for="customProviderTemperature">Temperatura</label><input id="customProviderTemperature" type="number" min="0" max="2" step=".1" value=".2"></div>
+              <div class="col-2 field"><label class="check" style="margin-top:30px"><input id="customProviderEnabled" type="checkbox" checked> Habilitado</label></div>
+              <div class="col-3 field"><label for="customProviderScopeMode">Escopo</label><select id="customProviderScopeMode"><option value="ALL">Todas as empresas</option><option value="SELECTED">Empresas selecionadas</option></select></div>
+              <div class="col-6 field"><label for="customProviderTenantIds">Empresas</label><select id="customProviderTenantIds" class="multi-select" multiple disabled></select></div>
+              <div class="col-3 field" style="display:flex;align-items:end"><button class="btn full" data-action="create-provider">Adicionar provider</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-chatwoot" class="page">
+          <div class="page-head"><div><h2>Integração Chatwoot</h2><p class="muted">Entrega de respostas, múltiplos canais, webhook e transferência humana.</p></div><div class="inline"><button class="btn ghost" data-action="test-chatwoot">Salvar e testar</button><button class="btn" data-action="save-chatwoot">Salvar integração</button></div></div>
+          <div class="card">
+            <div class="grid">
+              <div class="col-4 field"><label for="cwUrl">URL interna</label><input id="cwUrl" placeholder="http://chatwoot:3000"></div>
+              <div class="col-2 field"><label for="cwAccount">Account ID</label><input id="cwAccount"></div>
+              <div class="col-6 field"><label for="cwInbox">Inbox IDs dos canais desta empresa</label><textarea id="cwInbox" rows="3" placeholder="1&#10;2&#10;3"></textarea><small>Use vírgulas ou uma linha por ID. Todas as inboxes informadas devem pertencer à empresa selecionada.</small></div>
+              <div class="col-2 field"><label for="cwTeam">Team ID padrão</label><input id="cwTeam" type="number" min="1"></div>
+              <div class="col-2 field"><label for="cwAssignee">Assignee ID padrão</label><input id="cwAssignee" type="number" min="1"></div>
+              <div class="col-8 field"><label for="cwWebhook">URL do webhook desta empresa</label><input id="cwWebhook" placeholder="http://gateway:3001/webhooks/chatwoot/:tenantSlug"></div>
+              <div class="col-3 field"><label for="cwToken">Novo API access token</label><input id="cwToken" type="password" autocomplete="new-password" placeholder="Manter o atual"></div>
+              <div class="col-3 field"><label for="cwWebhookSecret">Novo segredo do webhook</label><input id="cwWebhookSecret" type="password" autocomplete="new-password" placeholder="Manter o atual"></div>
+              <div class="col-6"><label class="check"><input id="cwClearToken" type="checkbox"> Remover token salvo</label></div>
+              <div class="col-6"><label class="check"><input id="cwClearSecret" type="checkbox"> Remover segredo salvo</label></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Roteamento por setor</h3><p class="muted">Cada plataforma continua sendo uma inbox técnica do Chatwoot, mas todas pertencem à mesma empresa. Quando houver transferência humana, o Gateway escolhe a equipe pelo assunto da conversa, independentemente de ela ter começado no WhatsApp, Instagram, Facebook ou site.</p></div></div>
+            <div class="grid">
+              <div class="col-4"><strong>Comercial</strong><br><small>Compra, preço, disponibilidade e negociação.</small></div>
+              <div class="col-4 field"><label for="cwCommercialTeam">Team ID</label><input id="cwCommercialTeam" type="number" min="1"></div>
+              <div class="col-4 field"><label for="cwCommercialAssignee">Assignee ID opcional</label><input id="cwCommercialAssignee" type="number" min="1"></div>
+              <div class="col-4"><strong>SAC / Suporte</strong><br><small>Dúvidas, configuração e ajuda técnica.</small></div>
+              <div class="col-4 field"><label for="cwSupportTeam">Team ID</label><input id="cwSupportTeam" type="number" min="1"></div>
+              <div class="col-4 field"><label for="cwSupportAssignee">Assignee ID opcional</label><input id="cwSupportAssignee" type="number" min="1"></div>
+              <div class="col-4"><strong>Pós-venda</strong><br><small>Pedido, pagamento, entrega, troca e garantia.</small></div>
+              <div class="col-4 field"><label for="cwPostSaleTeam">Team ID</label><input id="cwPostSaleTeam" type="number" min="1"></div>
+              <div class="col-4 field"><label for="cwPostSaleAssignee">Assignee ID opcional</label><input id="cwPostSaleAssignee" type="number" min="1"></div>
+            </div>
+            <p class="muted">Os IDs padrão acima continuam sendo usados quando o setor ainda não puder ser identificado ou não possuir uma rota específica.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Horário comercial</h3><p class="muted">Dias 0 a 6 representam domingo a sábado.</p></div></div>
+            <div class="grid">
+              <div class="col-4 field"><label for="timezone">Fuso horário IANA</label><input id="timezone" value="America/Sao_Paulo"></div>
+              <div class="col-8 field"><label for="schedule">Agenda em JSON</label><textarea id="schedule" rows="6" placeholder='{"1":["08:00","18:00"]}'></textarea></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-knowledge" class="page">
+          <div class="page-head"><div><h2>Conhecimento / RAG</h2><p class="muted">Documentos, chunks e embeddings indexados no pgvector.</p></div><button class="btn ghost" data-action="reindex-all">Reindexar tudo</button></div>
+          <div class="callout">
+            <h3>Como indexar a planilha inicial</h3>
+            <p>Você está em <strong>Admin → Conhecimento / RAG</strong>. Clique em escolher arquivo, selecione <span class="code">data/rag/respostas_rapidas.xlsx</span> dentro do projeto e depois clique em <strong>Importar e indexar</strong>. Quando concluir, confirme abaixo que o documento está com status <strong>ready</strong> e que possui chunks e embeddings.</p>
+            <p class="security-note">A indexação é persistida no PostgreSQL/pgvector e continua disponível após reiniciar os containers. O mesmo conhecimento recuperado é enviado ao provider principal ou ao provider de fallback; não é necessário importar uma cópia para cada IA.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Importar documento</h3><p class="muted">Formatos: XLSX, PDF, DOCX, Markdown, TXT e HTML. Limite de 25 MB.</p></div></div>
+            <div class="inline"><input id="ragFile" style="max-width:520px" type="file" accept=".xlsx,.pdf,.docx,.md,.markdown,.txt,.html,.htm"><button class="btn" data-action="upload-rag">Importar e indexar</button></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Fontes indexadas</h3><p class="muted">Exclusão remove todos os chunks da fonte selecionada.</p></div><button class="btn ghost small" data-action="reload-rag">Atualizar lista</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Documento</th><th>Fonte / identificador</th><th>Chunks</th><th>Embeddings</th><th>Última indexação</th><th>Status</th><th>Ações</th></tr></thead><tbody id="ragBody"></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="page-tools" class="page">
+          <div class="page-head"><div><h2>Tools</h2><p class="muted">Conecte APIs externas reais; testes nunca usam respostas mockadas.</p></div><button class="btn ghost" data-action="reload-tools">Atualizar</button></div>
+          <div class="card">
+            <div class="table-wrap"><table><thead><tr><th>Tool</th><th>Ativa / endpoint</th><th>Timeout</th><th>Autenticação</th><th>Status</th><th>Ações</th></tr></thead><tbody id="toolsBody"></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="page-operations" class="page">
+          <div class="page-head"><div><h2>Operação e regras</h2><p class="muted">Conversas, regras por empresa, modelos utilizados, logs, tokens e custo estimado.</p></div><button class="btn ghost" data-action="reload-operations">Atualizar</button></div>
+          <div class="card">
+            <div class="card-head"><div><h3>Regras de negócio da empresa</h3><p class="muted">Edite o conhecimento conversacional derivado do bot.json somente para a empresa ativa.</p></div><div class="inline"><button class="btn ghost small" data-action="reload-business-rules">Recarregar</button><button class="btn small" data-action="save-business-rules">Salvar regras</button><button class="btn danger small" data-action="clear-business-rules">Limpar</button></div></div>
+            <label class="check" style="margin-bottom:12px"><input id="businessRulesDocumentEnabled" type="checkbox"> Regras habilitadas para esta empresa</label>
+            <div class="field"><label for="businessRulesJson">JSON das regras</label><textarea id="businessRulesJson" rows="12" spellcheck="false" placeholder='{"flow":[]}'></textarea></div>
+            <div class="inline"><input id="businessRulesFile" style="max-width:520px" type="file" accept=".json,application/json"><button class="btn ghost small" data-action="load-business-rules-file">Carregar arquivo no editor</button></div>
+            <p class="form-note" style="margin-top:10px">Carregar um arquivo não salva automaticamente. Revise o JSON e clique em “Salvar regras”.</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Conversas</h3></div><input id="operationSearch" style="max-width:300px" placeholder="Filtrar conversa ou mensagem"></div>
+            <div class="table-wrap"><table><thead><tr><th>Conversa</th><th>Status</th><th>Agente</th><th>Última IA</th><th>Última mensagem</th><th>Atualização</th></tr></thead><tbody id="conversationsBody"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Logs e custos</h3></div><select id="logLimit" style="width:130px"><option value="100">100 eventos</option><option value="250">250 eventos</option><option value="500">500 eventos</option></select></div>
+            <div class="table-wrap"><table><thead><tr><th>Data</th><th>Conversa</th><th>Provider / modelo</th><th>Tokens</th><th>Custo</th><th>Latência / Tools</th><th>Resultado</th></tr></thead><tbody id="logsBody"></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="page-improvement" class="page">
+          <div class="page-head"><div><h2>Melhoria contínua</h2><p class="muted">Resultados reais, revisão humana, datasets e publicação segura de prompts.</p></div><button class="btn ghost" data-action="reload-improvement">Atualizar</button></div>
+          <div class="callout">
+            <h3>Aprendizado autônomo com aprovação enxuta</h3>
+            <p>O Gateway consolida muitas conversas em poucos candidatos de comportamento. Repetição não é tratada como verdade: são exigidos clientes distintos, resultados verificados, baixa contradição e confiança mínima. Preço, desconto, garantia e política nunca são aprendidos do texto das conversas; permanecem bloqueados até existir RAG, regra ou Tool oficial.</p>
+          </div>
+          <div id="improvementMetrics" class="improvement-metrics"><div class="empty">Abra esta seção para carregar as métricas.</div></div>
+
+          <div class="card">
+            <div class="card-head"><div><h3>Candidatos consolidados</h3><p class="muted">Revise cards agregados, não respostas temporárias. Uma aprovação aplica apenas a tática segura; fatos comerciais continuam obrigatoriamente consultados em fontes atuais.</p></div><div class="inline"><button class="btn ghost small" data-action="discover-learning">Analisar novas conversas</button><button class="btn small" data-action="approve-learning">Aprovar selecionados</button><button class="btn danger small" data-action="reject-learning">Rejeitar selecionados</button></div></div>
+            <div class="table-wrap"><table><thead><tr><th></th><th>Candidato</th><th>Evidência</th><th>Confiança / risco</th><th>Estado</th></tr></thead><tbody id="learningCandidatesBody"></tbody></table></div>
+            <div id="approvedLearningGuidance" class="form-note" style="margin-top:14px">Nenhuma diretriz aprovada.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><div><h3>Conversa em foco</h3><p class="muted">Informe o identificador externo ou escolha uma conversa na tabela abaixo. Os quatro controles usam este mesmo ID.</p></div></div>
+            <div class="focus-bar">
+              <div class="field"><label for="improvementConversationId">ID externo da conversa</label><input id="improvementConversationId" list="improvementConversationOptions" placeholder="Ex.: 12345"></div>
+              <datalist id="improvementConversationOptions"></datalist>
+              <button class="btn ghost" data-action="evaluate-conversation">Executar avaliação automática</button>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="col-6 card">
+              <div class="card-head"><div><h3>Resultado comercial</h3><p class="muted">Use uma evidência real; não deduza venda apenas pelo texto da IA.</p></div></div>
+              <div class="grid">
+                <div class="col-4 field"><label for="outcomeStatus">Resultado</label><select id="outcomeStatus"><option value="PENDING">Pendente</option><option value="WON">Ganho</option><option value="LOST">Perdido</option></select></div>
+                <div class="col-4 field"><label for="outcomeConfidence">Confiança</label><input id="outcomeConfidence" type="number" min="0" max="1" step=".01" value="1"></div>
+                <div class="col-12 field"><label for="outcomeEvidence">Evidências (uma por linha)</label><textarea id="outcomeEvidence" placeholder="Pedido confirmado&#10;Pagamento aprovado"></textarea></div>
+              </div>
+              <button class="btn" data-action="save-outcome">Salvar resultado</button>
+            </div>
+
+            <div class="col-6 card">
+              <div class="card-head"><div><h3>Pedido ou pagamento</h3><p class="muted">Vincule o identificador da fonte e registre se a evidência foi verificada.</p></div></div>
+              <div class="grid">
+                <div class="col-3 field"><label for="commerceKind">Tipo</label><select id="commerceKind"><option value="ORDER">Pedido</option><option value="PAYMENT">Pagamento</option></select></div>
+                <div class="col-3 field"><label for="commerceSource">Fonte</label><input id="commerceSource" value="manual" placeholder="ERP, gateway..."></div>
+                <div class="col-6 field"><label for="commerceExternalId">ID do pedido/pagamento</label><input id="commerceExternalId"></div>
+                <div class="col-3 field"><label for="commerceStatus">Status externo</label><input id="commerceStatus" value="PENDING"></div>
+                <div class="col-3 field"><label for="commerceValue">Valor opcional</label><input id="commerceValue" type="number" min="0" step=".01"></div>
+                <div class="col-2 field"><label for="commerceCurrency">Moeda</label><input id="commerceCurrency" value="BRL" maxlength="3"></div>
+                <div class="col-4 field"><label for="commerceVerification">Verificação</label><select id="commerceVerification"><option value="UNVERIFIED">Não verificado</option><option value="VERIFIED">Verificado</option><option value="REJECTED">Rejeitado</option></select></div>
+                <div class="col-12 field"><label for="commerceEvidence">Evidência de verificação (JSON)</label><textarea id="commerceEvidence" placeholder='{"transactionId":"..."}'></textarea></div>
+              </div>
+              <button class="btn" data-action="add-commerce-link">Vincular registro</button>
+            </div>
+
+            <div class="col-12 card">
+              <div class="card-head"><div><h3>Feedback humano</h3><p class="muted">Avalie uma resposta específica ou a conversa inteira e registre a resposta esperada quando necessário.</p></div></div>
+              <div class="grid">
+                <div class="col-3 field"><label for="feedbackMessageId">ID da mensagem (opcional)</label><input id="feedbackMessageId"></div>
+                <div class="col-3 field"><label for="feedbackVerdict">Veredito</label><select id="feedbackVerdict"><option value="POSITIVE">Positivo</option><option value="NEGATIVE">Negativo</option><option value="NEUTRAL">Neutro</option></select></div>
+                <div class="col-2 field"><label for="feedbackScore">Nota opcional</label><input id="feedbackScore" type="number" min="-100" max="100" step="1" placeholder="-100 a 100"></div>
+                <div class="col-4 field"><label for="feedbackComment">Comentário</label><input id="feedbackComment"></div>
+                <div class="col-12 field"><label for="feedbackExpected">Resposta esperada (opcional)</label><textarea id="feedbackExpected"></textarea></div>
+              </div>
+              <button class="btn" data-action="add-feedback">Salvar feedback</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><div><h3>Conversas e resultados</h3><p class="muted">Dados retornados pelo resumo de melhoria contínua.</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Conversa</th><th>Resultado</th><th>Comércio</th><th>Feedback</th><th>Última avaliação</th><th>Ação</th></tr></thead><tbody id="improvementConversationsBody"></tbody></table></div>
+          </div>
+
+          <h3 class="subsection-title">Datasets versionados</h3>
+          <div class="grid">
+            <div class="col-4 card">
+              <div class="card-head"><div><h3>Materializar dataset</h3><p class="muted">Cria uma versão imutável a partir dos exemplos elegíveis atuais.</p></div></div>
+              <div class="field"><label for="datasetName">Nome</label><input id="datasetName"></div>
+              <div class="field"><label for="datasetNotes">Notas opcionais</label><textarea id="datasetNotes"></textarea></div>
+              <button class="btn" data-action="materialize-dataset">Criar versão</button>
+            </div>
+            <div class="col-8 card">
+              <div class="card-head"><div><h3>Datasets e versões</h3><p class="muted">Publicar promove somente a versão selecionada.</p></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Dataset</th><th>Versão</th><th>Itens</th><th>Status</th><th>Criação</th><th>Ação</th></tr></thead><tbody id="datasetsBody"></tbody></table></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><div><h3>Avaliações automáticas</h3><p class="muted">Resultados produzidos pelo avaliador para conversas selecionadas.</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Conversa</th><th>Status</th><th>Nota</th><th>Resultado</th><th>Versão de prompt</th><th>Data</th></tr></thead><tbody id="evaluationsBody"></tbody></table></div>
+          </div>
+
+          <h3 class="subsection-title">Prompts: versão, comparação e publicação</h3>
+          <div class="grid">
+            <div class="col-6 card">
+              <div class="card-head"><div><h3>Criar versão candidata</h3><p class="muted">O conteúdo só chega à produção após aprovação e release.</p></div><button class="btn ghost small" data-action="load-current-prompt-bundle">Carregar configuração atual</button></div>
+              <p id="currentPromptBundle" class="form-note">Aguardando o bundle atual.</p>
+              <div class="field"><label for="promptVersionDescription">Descrição opcional</label><input id="promptVersionDescription"></div>
+              <div class="field"><label for="promptVersionContent">Conteúdo do bundle</label><textarea id="promptVersionContent" rows="10" placeholder="Prompt principal e regras versionadas..."></textarea></div>
+              <button class="btn" data-action="create-prompt-version">Criar versão</button>
+            </div>
+            <div class="col-6 card">
+              <div class="card-head"><div><h3>Comparar versões</h3><p class="muted">Registra uma comparação reproduzível entre base e candidata.</p></div></div>
+              <div class="field"><label for="compareBaseVersion">Versão base</label><select id="compareBaseVersion"></select></div>
+              <div class="field"><label for="compareCandidateVersion">Versão candidata</label><select id="compareCandidateVersion"></select></div>
+              <button class="btn" data-action="compare-prompt-versions">Comparar</button>
+            </div>
+            <div class="col-12 card">
+              <div class="card-head"><div><h3>Versões de prompt</h3><p id="promptDefinitionLabel" class="muted">Definição: assistant-bundle</p></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Versão</th><th>Status</th><th>Descrição</th><th>Criador / aprovação</th><th>Data</th><th>Ação</th></tr></thead><tbody id="promptVersionsBody"></tbody></table></div>
+              <div id="promptInspection" class="hidden" style="margin-top:16px"><div class="card-head"><div><h3 id="promptInspectionTitle">Conteúdo proposto</h3><p class="muted">Este é o texto exato que você está avaliando.</p></div><button class="btn ghost small" data-action="close-prompt-inspection">Fechar</button></div><pre id="promptInspectionContent" class="code" style="white-space:pre-wrap;max-height:520px;overflow:auto"></pre></div>
+            </div>
+            <div class="col-7 card">
+              <div class="card-head"><div><h3>Publicar release</h3><p class="muted">Use canário para limitar a candidata a uma parcela das conversas.</p></div></div>
+              <div class="grid">
+                <div class="col-4 field"><label for="releaseKind">Tipo</label><select id="releaseKind"><option value="ACTIVE">Ativa</option><option value="CANARY">Canário</option></select></div>
+                <div class="col-4 field"><label for="releasePrimaryVersion">Versão principal</label><select id="releasePrimaryVersion"></select></div>
+                <div class="col-4 field"><label for="releaseCanaryVersion">Versão canário</label><select id="releaseCanaryVersion"></select></div>
+                <div class="col-3 field"><label for="releaseCanaryPercent">% canário</label><input id="releaseCanaryPercent" type="number" min="1" max="99" value="10"></div>
+                <div class="col-9 field"><label for="releaseReason">Motivo opcional</label><input id="releaseReason"></div>
+              </div>
+              <div class="inline"><button class="btn" data-action="release-prompt">Publicar</button><button class="btn danger" data-action="rollback-prompt">Rollback para release anterior</button></div>
+            </div>
+            <div class="col-5 card">
+              <div class="card-head"><div><h3>Histórico de releases</h3></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Principal / canário</th><th>Data</th></tr></thead><tbody id="promptReleasesBody"></tbody></table></div>
+            </div>
+            <div class="col-12 card">
+              <div class="card-head"><div><h3>Comparações registradas</h3></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Base</th><th>Candidata</th><th>Resultado</th><th>Data</th></tr></thead><tbody id="promptComparisonsBody"></tbody></table></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="setupOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="wizardTitle">
+    <div class="wizard">
+      <div class="wizard-head"><span class="badge">Primeiro uso</span><h1 id="wizardTitle">Configurar a operação</h1><p id="wizardSubtitle" class="muted">Etapa 1 de 7</p><div id="wizardProgress" class="steps"></div></div>
+      <div class="wizard-body">
+        <div class="wizard-panel" data-step="0">
+          <h2>Empresa</h2><p class="muted">Defina a identidade básica desta operação.</p>
+          <div class="grid"><div class="col-8 field"><label for="wCompany">Nome da empresa</label><input id="wCompany" required></div><div class="col-4 field"><label for="wLanguage">Idioma</label><select id="wLanguage"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option><option value="es">Español</option></select></div><div class="col-4 field"><label for="wColor">Cor principal</label><input id="wColor" type="color" value="#2563eb"></div></div>
+        </div>
+        <div class="wizard-panel" data-step="1">
+          <h2>Assistente</h2><p class="muted">Escolha um nome e as instruções iniciais.</p>
+          <div class="field"><label for="wBotName">Nome do assistente</label><input id="wBotName"></div><div class="field"><label for="wPrompt">Prompt principal</label><textarea id="wPrompt" rows="7" placeholder="Descreva papel, tom e limites do assistente."></textarea></div><div class="field"><label for="wWelcome">Mensagem de boas-vindas</label><textarea id="wWelcome"></textarea></div>
+        </div>
+        <div class="wizard-panel" data-step="2">
+          <h2>Providers globais de IA</h2>
+          <div class="global-only-note">
+            O onboarding desta empresa não cria, altera ou amplia o escopo de providers. As credenciais são globais e podem atender todas as empresas ou apenas uma seleção explícita.
+          </div>
+          <p class="muted" style="margin-top:14px">Depois de concluir o Wizard, um administrador com permissão <span class="code">providers:write</span> deve usar <strong>IA e providers / chaves</strong> para cadastrar as credenciais e escolher o escopo. Se já existem providers atribuídos a esta empresa, eles serão preservados sem qualquer mutação.</p>
+        </div>
+        <div class="wizard-panel" data-step="3">
+          <h2>Chatwoot</h2><p class="muted">Conecte a conta e todas as inboxes dos canais que pertencem à empresa selecionada.</p>
+          <div class="grid"><div class="col-6 field"><label for="wCwUrl">URL interna</label><input id="wCwUrl" value="http://chatwoot:3000"></div><div class="col-3 field"><label for="wCwAccount">Account ID</label><input id="wCwAccount"></div><div class="col-12 field"><label for="wCwInbox">Inbox IDs dos canais desta empresa</label><textarea id="wCwInbox" rows="3" placeholder="1, 2, 3"></textarea><small>Separe por vírgula ou linha e inclua todos os canais desta empresa.</small></div><div class="col-8 field"><label for="wCwWebhook">URL do webhook desta empresa</label><input id="wCwWebhook" placeholder="http://gateway:3001/webhooks/chatwoot/:tenantId"></div><div class="col-4 field"><label for="wCwTeam">Team ID opcional</label><input id="wCwTeam" type="number" min="1"></div><div class="col-12 field"><label for="wCwToken">API access token</label><input id="wCwToken" type="password" autocomplete="new-password"></div></div>
+        </div>
+        <div class="wizard-panel" data-step="4">
+          <h2>Conhecimento inicial</h2><p class="muted">O Gateway detecta a planilha montada na infraestrutura.</p>
+          <div id="wizardSpreadsheet" class="infra-item"><span>Verificando planilha</span><span class="badge">aguarde</span></div>
+          <label class="check" style="margin-top:18px"><input id="wImportQuickReplies" type="checkbox"> Importar a planilha detectada ao concluir</label>
+        </div>
+        <div class="wizard-panel" data-step="5">
+          <h2>Teste da infraestrutura</h2><p class="muted">As configurações serão salvas e testadas antes da conclusão.</p>
+          <div id="wizardInfrastructure" class="infra-list"><div class="empty">Clique em testar para validar banco, provider e Chatwoot.</div></div>
+          <button class="btn" style="margin-top:16px" data-action="wizard-test">Salvar e testar infraestrutura</button>
+        </div>
+        <div class="wizard-panel" data-step="6">
+          <h2>Pronto para operar</h2><p class="muted">Revise o resumo e finalize o primeiro uso.</p>
+          <div id="wizardSummary" class="infra-list"></div>
+          <p class="muted" style="margin-top:16px">Depois da conclusão, todas as configurações continuam editáveis neste console.</p>
+        </div>
+        <div class="wizard-actions"><button id="wizardBack" class="btn ghost" type="button" data-action="wizard-back">Voltar</button><button id="wizardNext" class="btn" type="button" data-action="wizard-next">Continuar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="notice" class="notice hidden" role="status"></div>
+
+  <script>
+  'use strict';
+  var apiBase = resolveApiBase();
+  var adminToken = '';
+  var adminSessionKey = 'omnichannel.adminSessionToken';
+  var selectedTenantId = '';
+  var tenantStorageKey = 'omnichannel.selectedTenantId';
+  var currentPage = 'overview';
+  var state = {me:{},tenants:[],users:[],settings:{},branding:{},providers:[],documents:[],activeRag:null,tools:[],conversations:[],logs:[],businessRules:null,health:{},setup:null,improvement:{loaded:false,metrics:{},conversations:[],datasets:[],evaluations:[],prompt:{definition:null,versions:[],releases:[],comparisons:[],currentBundle:null}}};
+  var wizardStep = 0;
+  var wizardTestResult = null;
+  var noticeTimer;
+
+  function el(id){return document.getElementById(id)}
+  function escapeHtml(value){return String(value == null ? '' : value).replace(/[&<>"]/g,function(char){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]})}
+  function numberOrNull(value){return value === '' || value == null ? null : Number(value)}
+  function numberOr(value,fallback){var parsed=Number(value);return Number.isFinite(parsed)?parsed:fallback}
+  function parseChatwootInboxIds(value){
+    var values=(Array.isArray(value)?value:String(value||'').split(/[,\r\n;]+/)).map(function(item){return String(item).trim()}).filter(Boolean);
+    var invalid=values.filter(function(item){return !/^[1-9]\d*$/.test(item)});
+    if(invalid.length)throw new Error('Inbox ID inválido: '+invalid.join(', ')+'. Use apenas números positivos separados por vírgula ou linha.');
+    return values.filter(function(item,index,list){return list.indexOf(item)===index});
+  }
+  function configuredChatwootInboxIds(settings){
+    var listed=settings&&settings.chatwootInboxIds;
+    var values=Array.isArray(listed)?listed:(listed==null||listed===''?[]:String(listed).split(/[,\r\n;]+/));
+    if(!values.length&&settings&&settings.chatwootInboxId!=null&&settings.chatwootInboxId!=='')values=[settings.chatwootInboxId];
+    return values.map(function(item){return String(item).trim()}).filter(function(item,index,list){return /^[1-9]\d*$/.test(item)&&list.indexOf(item)===index});
+  }
+  function configuredChatwootSectorRoute(settings,sector){
+    var routes=settings&&Array.isArray(settings.chatwootSectorRoutes)?settings.chatwootSectorRoutes:[];
+    return routes.find(function(route){return route&&route.sector===sector})||{};
+  }
+  function chatwootSectorRoutesFromForm(){
+    var definitions=[
+      {sector:'commercial',team:'cwCommercialTeam',assignee:'cwCommercialAssignee'},
+      {sector:'support',team:'cwSupportTeam',assignee:'cwSupportAssignee'},
+      {sector:'postSale',team:'cwPostSaleTeam',assignee:'cwPostSaleAssignee'}
+    ];
+    return definitions.map(function(definition){
+      var teamId=numberOrNull(el(definition.team).value),assigneeId=numberOrNull(el(definition.assignee).value);
+      if(assigneeId!==null&&teamId===null)throw new Error('Informe o Team ID antes do Assignee ID para o setor '+definition.sector+'.');
+      return teamId===null?null:{sector:definition.sector,teamId:teamId,assigneeId:assigneeId};
+    }).filter(Boolean);
+  }
+  function displayDate(value){if(!value)return '—';var date=new Date(value);return Number.isNaN(date.getTime())?'—':date.toLocaleString()}
+  function providerKey(provider){return String(provider.id || provider.type)}
+  function findProvider(key){return state.providers.find(function(provider){return providerKey(provider)===String(key)})}
+  function findRow(selector,key){return Array.from(document.querySelectorAll(selector)).find(function(row){return row.dataset.key===String(key)})}
+  function statusBadge(ok,yes,no){return '<span class="badge '+(ok?'ok':'bad')+'">'+escapeHtml(ok?yes:no)+'</span>'}
+  function showNotice(message,isError){clearTimeout(noticeTimer);var box=el('notice');box.textContent=String(message);box.classList.toggle('error',Boolean(isError));box.classList.remove('hidden');noticeTimer=setTimeout(function(){box.classList.add('hidden')},5000)}
+  function setBusy(target,busy){if(!target)return;target.disabled=busy;target.classList.toggle('loading',busy)}
+  function errorMessage(payload,fallback){if(!payload)return fallback;if(typeof payload==='string')return payload;if(typeof payload.message==='string')return payload.message;if(typeof payload.error==='string')return payload.error;return fallback}
+  function normalizeApiBase(value){
+    var raw=String(value||'').trim();
+    if(!raw)throw new Error('Informe a URL do AI Gateway.');
+    var parsed;
+    try{parsed=new URL(raw,location.origin)}catch(ignore){throw new Error('A URL do AI Gateway é inválida.')}
+    if(!/^https?:$/.test(parsed.protocol)||parsed.username||parsed.password)throw new Error('Use uma URL HTTP(S) sem usuário, senha ou segredo.');
+    parsed.search='';parsed.hash='';
+    return parsed.toString().replace(/\/+$/,'');
+  }
+  function resolveApiBase(){
+    var query='',meta='',stored='';
+    try{query=new URLSearchParams(location.search).get('apiBase')||new URLSearchParams(location.search).get('gateway')||''}catch(ignore){}
+    var metaElement=document.querySelector('meta[name="gateway-api-base"]');if(metaElement)meta=metaElement.content||'';
+    try{stored=localStorage.getItem('omnichannel.gatewayApiBase')||''}catch(ignore){}
+    var rawHost=String(location.hostname||''),bareHost=rawHost.replace(/^\[|\]$/g,'');
+    var localHost=['localhost','127.0.0.1','::1'].includes(bareHost);
+    var localUrlHost=bareHost.includes(':')?'['+bareHost+']':bareHost;
+    var fallback=localHost?(location.protocol+'//'+localUrlHost+':3001'):(/^https?:$/.test(location.protocol)?location.origin:'http://localhost:3001');
+    try{return normalizeApiBase(query||meta||stored||fallback)}catch(ignore){return fallback}
+  }
+  function resolveSsoApiBase(){
+    var query='',stored='';
+    try{query=new URLSearchParams(location.search).get('apiBase')||new URLSearchParams(location.search).get('gateway')||''}catch(ignore){}
+    try{stored=localStorage.getItem('omnichannel.gatewayApiBase')||''}catch(ignore){}
+    var raw=String(query||stored||apiBase||'').trim(),parsed;
+    if(!raw)throw new Error('Informe a URL do AI Gateway.');
+    if(!/^https?:\/\//i.test(raw))throw new Error('A URL do AI Gateway deve ser absoluta.');
+    try{parsed=new URL(raw)}catch(ignore){throw new Error('A URL do AI Gateway é inválida.')}
+    var hostname=String(parsed.hostname||'').replace(/^\[|\]$/g,'').toLowerCase();
+    var loopback=['localhost','127.0.0.1','::1'].includes(hostname);
+    if(parsed.username||parsed.password)throw new Error('A URL do AI Gateway não pode conter credenciais.');
+    if(parsed.protocol!=='https:'&&!(parsed.protocol==='http:'&&loopback))throw new Error('O acesso por SSO exige HTTPS; HTTP é permitido apenas em localhost.');
+    if(parsed.pathname!=='/')throw new Error('A URL do AI Gateway deve apontar para a raiz do serviço.');
+    parsed.search='';parsed.hash='';
+    return parsed.origin;
+  }
+  function isGlobalPath(path){var clean=String(path||'').split('?')[0];return clean==='/admin/me'||clean==='/admin/auth/login'||clean.indexOf('/admin/tenants')===0||clean.indexOf('/admin/users')===0||clean.indexOf('/admin/providers')===0}
+  function capabilityValues(){
+    var raw=(state.me&&state.me.capabilities)||(state.me&&state.me.user&&state.me.user.capabilities)||[];
+    if(Array.isArray(raw))return raw.map(String);
+    if(raw&&typeof raw==='object')return Object.keys(raw).filter(function(key){return raw[key]===true});
+    return [];
+  }
+  function hasCapability(name){
+    var aliases={
+      manageTenants:['tenants:write','manageTenants','tenants.write'],
+      manageUsers:['users:write','manageUsers','users.write'],
+      manageProviders:['providers:write','manageProviders','providers.write'],
+      tenantRead:['tenant:read','tenant:write','tenantRead','tenantWrite'],
+      tenantWrite:['tenant:write','tenantWrite','tenant.write']
+    };
+    var values=capabilityValues();
+    if(values.includes('admin:global')||values.includes('globalAdmin')||values.includes('admin.global'))return true;
+    return (aliases[name]||[name]).some(function(value){return values.includes(value)});
+  }
+
+  async function request(path,options){
+    options=options||{};
+    var headers=Object.assign({},options.headers||{});
+    headers.authorization='Bearer '+adminToken;
+    var tenantScoped=options.tenantScoped===undefined?!isGlobalPath(path):Boolean(options.tenantScoped);
+    if(tenantScoped){
+      if(!selectedTenantId)throw new Error('Selecione uma empresa para continuar.');
+      headers['X-Tenant-Id']=selectedTenantId;
+    }
+    if(options.body!=null && !(options.body instanceof FormData))headers['content-type']='application/json';
+    var fetchOptions=Object.assign({},options,{headers:headers});delete fetchOptions.tenantScoped;
+    var response=await fetch(apiBase+path,fetchOptions);
+    var text=await response.text();
+    var payload=null;
+    if(text){try{payload=JSON.parse(text)}catch(ignore){payload=text}}
+    if(response.status===401){logout();throw new Error('Sessão expirada ou inválida')}
+    if(!response.ok){var error=new Error(errorMessage(payload,'Erro HTTP '+response.status));error.status=response.status;error.payload=payload;throw error}
+    return payload;
+  }
+  async function optionalRequest(path,fallback){try{return await request(path)}catch(error){if(error.status===404)return fallback;throw error}}
+  async function publicHealth(){var response=await fetch(apiBase+'/health');if(!response.ok)throw new Error('Gateway indisponível');return response.json()}
+  async function credentialLogin(username,password){
+    var response=await fetch(apiBase+'/admin/auth/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({username:username,password:password})});
+    var text=await response.text(),payload=null;
+    if(text){try{payload=JSON.parse(text)}catch(ignore){payload=text}}
+    if(response.status===401)throw new Error('Sessão expirada ou inválida');
+    if(!response.ok)throw new Error(errorMessage(payload,'Usuário ou senha inválidos.'));
+    var token=sessionTokenFrom(payload);
+    if(!token)throw new Error('O login não retornou um token de sessão.');
+    return token;
+  }
+  function sessionTokenFrom(payload){
+    var token=payload&&(payload.token||payload.accessToken||payload.adminToken||(payload.session&&payload.session.token));
+    return token?String(token):'';
+  }
+  async function nexusSsoLogin(code){
+    var body=JSON.stringify({code:code});
+    code='';
+    var response=await fetch(apiBase+'/admin/auth/nexus',{method:'POST',headers:{'content-type':'application/json'},body:body});
+    body='';
+    var text=await response.text(),payload=null;
+    if(text){try{payload=JSON.parse(text)}catch(ignore){payload=text}}
+    if(response.status===401)throw new Error('Sessão expirada ou inválida');
+    if(!response.ok)throw new Error(errorMessage(payload,'Não foi possível concluir o acesso por SSO.'));
+    var token=sessionTokenFrom(payload);
+    if(!token)throw new Error('O acesso por SSO não retornou uma sessão válida.');
+    return token;
+  }
+  function updateLoginMode(){
+    var credentials=el('loginMode').value==='credentials';
+    el('tokenLoginFields').classList.toggle('hidden',credentials);
+    el('credentialLoginFields').classList.toggle('hidden',!credentials);
+    el('adminToken').required=!credentials;
+    el('loginUsername').required=credentials;
+    el('loginPassword').required=credentials;
+  }
+
+  function logout(){
+    var tokenToRevoke=adminToken;
+    if(tokenToRevoke){
+      fetch(apiBase+'/admin/auth/logout',{method:'POST',headers:{authorization:'Bearer '+tokenToRevoke}}).catch(function(){});
+    }
+    adminToken='';
+    try{sessionStorage.removeItem(adminSessionKey)}catch(ignore){}
+    selectedTenantId='';
+    state={me:{},tenants:[],users:[],settings:{},branding:{},providers:[],documents:[],activeRag:null,tools:[],conversations:[],logs:[],businessRules:null,health:{},setup:null,improvement:{loaded:false,metrics:{},conversations:[],datasets:[],evaluations:[],prompt:{definition:null,versions:[],releases:[],comparisons:[],currentBundle:null}}};
+    el('adminToken').value='';
+    el('loginPassword').value='';
+    el('shell').classList.add('hidden');
+    el('setupOverlay').classList.add('hidden');
+    el('authView').classList.remove('hidden');
+  }
+
+  async function login(event){
+    event.preventDefault();
+    var button=el('loginButton');
+    setBusy(button,true);
+    try{
+      apiBase=normalizeApiBase(el('gatewayApiBase').value);
+      el('gatewayApiBase').value=apiBase;
+      try{localStorage.setItem('omnichannel.gatewayApiBase',apiBase)}catch(ignore){}
+      if(el('loginMode').value==='credentials'){
+        var username=el('loginUsername').value.trim(),password=el('loginPassword').value;
+        if(!username||!password)throw new Error('Informe usuário e senha.');
+        adminToken=await credentialLogin(username,password);
+      }else{
+        adminToken=el('adminToken').value.trim();
+        if(!adminToken)throw new Error('Informe o token administrativo.');
+      }
+      await completeLogin();
+    }catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+
+  async function completeLogin(){
+    el('adminToken').value='';el('loginPassword').value='';
+    await loadSession();
+    await loadAll();
+    try{sessionStorage.setItem(adminSessionKey,adminToken)}catch(ignore){}
+    el('authView').classList.add('hidden');
+    el('shell').classList.remove('hidden');
+    applyCapabilities();
+    if(!selectedTenantId&&hasCapability('manageTenants'))switchPage('tenants');
+    else if(selectedTenantId&&hasCapability('tenantWrite')&&state.setup&&(state.setup.firstRun||!state.setup.completed))openWizard();
+  }
+
+  function tenantRecord(item){return item&&item.tenant?Object.assign({},item.tenant,{membership:item}):item}
+  function availableTenantsFromMe(){
+    var raw=(state.me&&state.me.tenants)||(state.me&&state.me.user&&state.me.user.tenants)||(state.me&&state.me.memberships)||[];
+    return asList(raw).map(tenantRecord).filter(function(item){return item&&item.id});
+  }
+  async function loadSession(){
+    state.me=await request('/admin/me',{tenantScoped:false});
+    var tenants=availableTenantsFromMe();
+    if(hasCapability('manageTenants')||hasCapability('manageUsers')||hasCapability('manageProviders')){
+      try{
+        var result=await request('/admin/tenants',{tenantScoped:false});
+        tenants=asList(result&&result.tenants!==undefined?result.tenants:result).map(tenantRecord);
+      }catch(error){if(error.status!==403)throw error}
+    }else if(!tenants.length){
+      try{var accessible=await request('/admin/tenants',{tenantScoped:false});tenants=asList(accessible&&accessible.tenants!==undefined?accessible.tenants:accessible).map(tenantRecord)}
+      catch(error){if(error.status!==403)throw error}
+    }
+    state.tenants=tenants.filter(function(item){return item&&item.id});
+    var remembered='';try{remembered=localStorage.getItem(tenantStorageKey)||''}catch(ignore){}
+    var selectable=activeTenantRecords();
+    var requestedSlug='';try{requestedSlug=(new URLSearchParams(window.location.search).get('tenantSlug')||'').trim().toLowerCase()}catch(ignore){}
+    var requestedTenant=requestedSlug?selectable.find(function(item){return String(item.slug||'').trim().toLowerCase()===requestedSlug}):null;
+    var preferred=requestedTenant?String(requestedTenant.id):(remembered||(state.me&&state.me.currentTenantId)||'');
+    var configuredDefault=selectable[0];
+    selectedTenantId=selectable.some(function(item){return String(item.id)===String(preferred)})
+      ?String(preferred)
+      :(configuredDefault?String(configuredDefault.id):'');
+    persistSelectedTenant();
+    renderTenantSelector();
+  }
+
+  async function loadAll(){
+    if(!selectedTenantId){
+      state.health=await publicHealth();
+      state.settings={};state.branding={};state.documents=[];state.tools=[];state.conversations=[];state.logs=[];state.businessRules=null;state.setup={completed:true,firstRun:false,infrastructure:{}};
+      if(hasCapability('manageProviders')){
+        var globalProviderResults=await Promise.all([request('/admin/providers',{tenantScoped:false}),optionalRequest('/admin/providers/health',{providers:[]})]);
+        state.providers=asList(globalProviderResults[0]&&globalProviderResults[0].providers!==undefined?globalProviderResults[0].providers:globalProviderResults[0]);
+        state.health.providers=Array.isArray(globalProviderResults[1])?globalProviderResults[1]:(globalProviderResults[1].providers||[]);
+      }else{state.providers=[];state.health.providers=[]}
+      renderAll();return;
+    }
+    var limit=el('logLimit')?el('logLimit').value:'100';
+    var canManageProviders=hasCapability('manageProviders');
+    var results=await Promise.all([
+      publicHealth(),
+      request('/admin/settings'),
+      optionalRequest('/admin/branding',{}),
+      canManageProviders?request('/admin/providers',{tenantScoped:false}):Promise.resolve([]),
+      canManageProviders?optionalRequest('/admin/providers/health',{providers:[]}):Promise.resolve({providers:[]}),
+      optionalRequest('/admin/rag/documents',{documents:[]}),
+      optionalRequest('/admin/tools',{tools:[]}),
+      request('/admin/conversations'),
+      request('/admin/logs?limit='+encodeURIComponent(limit)),
+      optionalRequest('/admin/setup',{completed:true,firstRun:false,infrastructure:{}}),
+      optionalRequest('/admin/business-rules',null)
+    ]);
+    state.health=results[0]||{};
+    state.settings=results[1]||{};
+    state.branding=Object.assign({},state.settings,results[2]||{});
+    state.providers=asList(results[3]&&results[3].providers!==undefined?results[3].providers:results[3]);
+    state.health.providers=Array.isArray(results[4])?results[4]:(results[4].providers||[]);
+    state.documents=Array.isArray(results[5])?results[5]:(results[5].documents||[]);
+    state.tools=Array.isArray(results[6])?results[6]:(results[6].tools||[]);
+    state.conversations=Array.isArray(results[7])?results[7]:[];
+    state.logs=Array.isArray(results[8])?results[8]:[];
+    state.setup=results[9]||{};
+    state.businessRules=results[10];
+    renderAll();
+  }
+
+  function renderAll(){
+    renderTenantSelector();
+    renderTenants();
+    renderUsers();
+    applyBranding();
+    fillIdentity();
+    fillAiSettings();
+    fillChatwoot();
+    renderBusinessRules();
+    renderProviders();
+    renderDocuments();
+    renderTools();
+    renderOperations();
+    renderImprovement();
+    renderOverview();
+    renderWizardDetection();
+    renderGatewayStatus();
+    applyCapabilities();
+  }
+
+  function activeTenant(){return state.tenants.find(function(item){return String(item.id)===String(selectedTenantId)})||null}
+  function activeTenantRecords(){return state.tenants.filter(function(item){return item.enabled!==false&&item.active!==false})}
+  function persistSelectedTenant(){
+    try{
+      if(selectedTenantId)localStorage.setItem(tenantStorageKey,selectedTenantId);
+      else localStorage.removeItem(tenantStorageKey);
+    }catch(ignore){}
+  }
+  function tenantLabel(item){
+    var company=String(item.name||item.companyName||item.slug||item.id||'Empresa');
+    var bot=String(item.botName||'').trim();
+    return bot&&bot.toLowerCase()!=='assistente virtual'?company+' · '+bot:company;
+  }
+  function tenantSlug(){var item=activeTenant();return String((item&&item.slug)||selectedTenantId||'tenant')}
+  function tenantWebhookUrl(value){
+    var configured=String(value||'').trim();
+    var base='http://gateway:3001/webhooks/chatwoot';
+    var match=configured.match(/^(.*\/webhooks\/chatwoot)(?:\/[^/?#]+)?(?:[?#].*)?$/i);
+    if(match)base=match[1];
+    else if(configured){try{base=new URL(configured).origin+'/webhooks/chatwoot'}catch(ignore){}}
+    return base+'/'+encodeURIComponent(tenantSlug());
+  }
+  function tenantOptions(selectedIds){
+    var selected=(selectedIds||[]).map(String);
+    return activeTenantRecords().map(function(item){var id=String(item.id);return '<option value="'+escapeHtml(id)+'" '+(selected.includes(id)?'selected':'')+'>'+escapeHtml(tenantLabel(item))+'</option>'}).join('');
+  }
+  function selectedValues(select){return Array.from(select.selectedOptions||[]).map(function(option){return option.value}).filter(Boolean)}
+  function renderTenantSelector(){
+    var select=el('tenantSelector'),previous=selectedTenantId,activeItems=activeTenantRecords();
+    select.innerHTML=activeItems.length?activeItems.map(function(item){return '<option value="'+escapeHtml(item.id)+'">'+escapeHtml(tenantLabel(item))+'</option>'}).join(''):'<option value="">Nenhuma empresa disponível</option>';
+    select.value=previous;
+    select.disabled=!activeItems.length;
+    el('newUserTenantIds').innerHTML=tenantOptions(selectedValues(el('newUserTenantIds')));
+    el('customProviderTenantIds').innerHTML=tenantOptions(selectedValues(el('customProviderTenantIds')));
+  }
+  async function changeActiveTenant(){
+    var next=el('tenantSelector').value;if(!next||next===selectedTenantId)return;
+    clearActiveRag();
+    selectedTenantId=next;
+    persistSelectedTenant();
+    el('setupOverlay').classList.add('hidden');
+    state.improvement={loaded:false,metrics:{},conversations:[],datasets:[],evaluations:[],prompt:{definition:null,versions:[],releases:[],comparisons:[],currentBundle:null}};
+    setBusy(el('tenantSelector'),true);
+    try{
+      await loadAll();
+      if(currentPage==='improvement')await fetchImprovement();
+      showNotice('Empresa ativa alterada para '+tenantLabel(activeTenant())+'.');
+      if(hasCapability('tenantWrite')&&state.setup&&(state.setup.firstRun||!state.setup.completed))openWizard();
+    }catch(error){showNotice(error.message,true)}
+    finally{setBusy(el('tenantSelector'),false)}
+  }
+  function applyCapabilities(){
+    document.querySelectorAll('[data-capability]').forEach(function(item){item.classList.toggle('capability-hidden',!hasCapability(item.dataset.capability))});
+    document.querySelectorAll('[data-capability-section]').forEach(function(item){item.classList.toggle('capability-hidden',!hasCapability(item.dataset.capabilitySection))});
+    var tenantPages=['identity','ai','chatwoot','knowledge','tools','operations','improvement'];
+    document.querySelectorAll('.nav [data-page]').forEach(function(item){if(tenantPages.includes(item.dataset.page))item.classList.toggle('capability-hidden',!hasCapability('tenantRead'))});
+    el('providersAccessNote').classList.toggle('hidden',hasCapability('manageProviders'));
+    var globalPageCapability={tenants:'manageTenants',users:'manageUsers'};
+    if(globalPageCapability[currentPage]&&!hasCapability(globalPageCapability[currentPage]))switchPage('overview');
+    document.querySelectorAll('[data-action]').forEach(function(button){if(isTenantMutationAction(button.dataset.action))button.disabled=!selectedTenantId||!hasCapability('tenantWrite')});
+  }
+  function isTenantMutationAction(action){return ['save-identity','save-ai-settings','save-chatwoot','test-chatwoot','upload-rag','save-rag','reindex-all','reindex-rag','delete-rag','save-tool','test-tool','save-business-rules','clear-business-rules','discover-learning','approve-learning','reject-learning','save-outcome','add-commerce-link','add-feedback','evaluate-conversation','materialize-dataset','publish-dataset','create-prompt-version','approve-prompt-version','compare-prompt-versions','release-prompt','rollback-prompt','wizard-test','wizard-next'].includes(action)}
+  function requireCapability(name,message){if(hasCapability(name))return true;showNotice(message||'Seu usuário não possui permissão para esta ação.',true);return false}
+
+  function renderTenants(){
+    el('tenantsBody').innerHTML=state.tenants.length?state.tenants.map(function(item){
+      var id=String(item.id),enabled=item.enabled!==false&&item.active!==false;
+      return '<tr data-key="'+escapeHtml(id)+'"><td><input data-field="name" value="'+escapeHtml(item.name||item.companyName||'')+'"></td><td><input data-field="botName" value="'+escapeHtml(item.botName||'Assistente virtual')+'"></td><td><input data-field="slug" value="'+escapeHtml(item.slug||'')+'"></td><td><label class="check"><input data-field="enabled" type="checkbox" '+(enabled?'checked':'')+'> Ativa</label></td><td><span class="code">'+escapeHtml(id)+'</span></td><td><div class="actions"><button class="btn small" data-action="save-tenant" data-key="'+escapeHtml(id)+'">Salvar</button><button class="btn ghost small" data-action="select-tenant" data-tenant-id="'+escapeHtml(id)+'" data-target-page="identity">Configurar bot</button></div></td></tr>';
+    }).join(''):'<tr><td colspan="6" class="empty">Nenhum bot/empresa cadastrado.</td></tr>';
+  }
+  async function reloadTenants(notify){
+    if(!requireCapability('manageTenants'))return;
+    try{
+      var previousTenantId=selectedTenantId;
+      var result=await request('/admin/tenants',{tenantScoped:false});
+      state.tenants=asList(result&&result.tenants!==undefined?result.tenants:result).map(tenantRecord);
+      if(selectedTenantId&&!activeTenantRecords().some(function(item){return String(item.id)===String(selectedTenantId)}))selectedTenantId=activeTenantRecords()[0]?String(activeTenantRecords()[0].id):'';
+      persistSelectedTenant();
+      renderTenantSelector();renderTenants();renderUsers();renderProviders();
+      if(previousTenantId!==selectedTenantId){
+        el('setupOverlay').classList.add('hidden');
+        state.improvement={loaded:false,metrics:{},conversations:[],datasets:[],evaluations:[],prompt:{definition:null,versions:[],releases:[],comparisons:[],currentBundle:null}};
+        await loadAll();
+        if(currentPage==='improvement'&&selectedTenantId)await fetchImprovement();
+        if(!selectedTenantId&&currentPage!=='tenants'&&currentPage!=='users'&&!(currentPage==='ai'&&hasCapability('manageProviders')))switchPage('overview');
+      }
+      if(notify)showNotice('Empresas atualizadas.');
+    }catch(error){showNotice(error.message,true)}
+  }
+  async function createTenant(button){
+    if(!requireCapability('manageTenants'))return;
+    var name=el('newTenantName').value.trim(),botName=el('newTenantBotName').value.trim(),slug=el('newTenantSlug').value.trim();
+    if(!name||!botName||!slug){showNotice('Informe empresa, nome do bot e slug.',true);return}
+    setBusy(button,true);
+    try{
+      var created=await request('/admin/tenants',{method:'POST',tenantScoped:false,body:JSON.stringify({name:name,botName:botName,slug:slug,enabled:el('newTenantEnabled').checked,deferIntegrations:el('newTenantDeferIntegrations').checked})});
+      el('newTenantName').value='';el('newTenantBotName').value='';el('newTenantSlug').value='';
+      await reloadTenants(false);
+      if(created&&created.id&&activeTenantRecords().some(function(item){return String(item.id)===String(created.id)})){
+        selectedTenantId=String(created.id);persistSelectedTenant();renderTenantSelector();el('tenantSelector').value=selectedTenantId;await loadAll();switchPage('identity');
+      }
+      showNotice('Bot e empresa cadastrados sem copiar Chatwoot ou conhecimento.');
+    }catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  async function saveTenant(key,button){
+    if(!requireCapability('manageTenants'))return;
+    var row=findRow('#tenantsBody tr',key);if(!row){showNotice('Empresa não encontrada.',true);return}
+    var field=function(name){return row.querySelector('[data-field="'+name+'"]')};
+    var payload={name:field('name').value.trim(),botName:field('botName').value.trim(),slug:field('slug').value.trim(),enabled:field('enabled').checked};
+    if(!payload.name||!payload.botName||!payload.slug){showNotice('Empresa, nome do bot e slug são obrigatórios.',true);return}
+    setBusy(button,true);
+    try{await request('/admin/tenants/'+encodeURIComponent(key),{method:'PUT',tenantScoped:false,body:JSON.stringify(payload)});await reloadTenants(false);showNotice('Empresa atualizada.')}
+    catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  async function selectTenantFromButton(id,targetPage){
+    if(!activeTenantRecords().some(function(item){return String(item.id)===String(id)})){showNotice('Ative a empresa antes de selecioná-la.',true);return}
+    if(String(id)!==String(selectedTenantId)){el('tenantSelector').value=String(id);await changeActiveTenant()}
+    switchPage(targetPage||'overview');
+  }
+
+  function userTenantIds(user){
+    if(Array.isArray(user.tenantIds))return user.tenantIds.map(String);
+    var memberships=asList(user.tenants||user.memberships);
+    return memberships.map(function(item){return String((item.tenant&&item.tenant.id)||item.tenantId||item.id||'')}).filter(Boolean);
+  }
+  function userAuthSource(user){return String((user&&user.authSource)||'LOCAL').toUpperCase()}
+  function renderUsers(){
+    el('newUserTenantIds').innerHTML=tenantOptions(selectedValues(el('newUserTenantIds')));
+    el('usersBody').innerHTML=state.users.length?state.users.map(function(user){
+      var id=String(user.id),enabled=user.enabled!==false&&user.active!==false,nexus=userAuthSource(user)==='NEXUS',disabled=nexus?' disabled':'';
+      var sourceBadge=nexus?'<span class="badge ok">SSO externo</span>':'<span class="badge warn">Local</span>';
+      return '<tr data-key="'+escapeHtml(id)+'" data-auth-source="'+(nexus?'NEXUS':'LOCAL')+'"><td><div class="cell-stack">'+sourceBadge+'<input data-field="username" value="'+escapeHtml(user.username||user.email||'')+'"'+disabled+'><input data-field="name" value="'+escapeHtml(user.name||user.displayName||'')+'" placeholder="Nome de exibição"'+disabled+'></div></td><td><div class="cell-stack"><input data-field="role" value="'+escapeHtml(user.role||'TENANT_USER')+'"'+disabled+'><label class="check"><input data-field="enabled" type="checkbox" '+(enabled?'checked':'')+disabled+'> Ativo</label></div></td><td><select data-field="tenantIds" class="multi-select" multiple'+disabled+'>'+tenantOptions(userTenantIds(user))+'</select></td><td><input data-field="password" type="password" autocomplete="new-password" placeholder="'+(nexus?'Gerenciado pelo SSO':'Manter atual')+'"'+disabled+'></td><td><button class="btn '+(nexus?'ghost ':'')+'small" data-action="save-user" data-key="'+escapeHtml(id)+'"'+disabled+'>'+(nexus?'Gerenciado pelo SSO':'Salvar')+'</button></td></tr>';
+    }).join(''):'<tr><td colspan="5" class="empty">Nenhum usuário cadastrado.</td></tr>';
+  }
+  async function reloadUsers(notify){
+    if(!requireCapability('manageUsers'))return;
+    try{var result=await request('/admin/users',{tenantScoped:false});state.users=asList(result&&result.users!==undefined?result.users:result);renderUsers();if(notify)showNotice('Usuários atualizados.')}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function createUser(button){
+    if(!requireCapability('manageUsers'))return;
+    var payload={username:el('newUserUsername').value.trim(),name:el('newUserName').value.trim(),password:el('newUserPassword').value,role:el('newUserRole').value.trim(),enabled:el('newUserEnabled').checked,tenantIds:selectedValues(el('newUserTenantIds'))};
+    if(!payload.username||!payload.password||!payload.role){showNotice('Informe usuário, senha e perfil.',true);return}
+    setBusy(button,true);
+    try{await request('/admin/users',{method:'POST',tenantScoped:false,body:JSON.stringify(payload)});el('newUserUsername').value='';el('newUserName').value='';el('newUserPassword').value='';await reloadUsers(false);showNotice('Usuário cadastrado.')}
+    catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  async function saveUser(key,button){
+    if(!requireCapability('manageUsers'))return;
+    var user=state.users.find(function(item){return String(item.id)===String(key)});
+    if(user&&userAuthSource(user)==='NEXUS'){showNotice('Gerencie este usuário no provedor SSO externo.',true);return}
+    var row=findRow('#usersBody tr',key);if(!row){showNotice('Usuário não encontrado.',true);return}
+    var field=function(name){return row.querySelector('[data-field="'+name+'"]')};
+    var payload={username:field('username').value.trim(),name:field('name').value.trim(),role:field('role').value.trim(),enabled:field('enabled').checked,tenantIds:selectedValues(field('tenantIds'))};
+    if(field('password').value)payload.password=field('password').value;
+    setBusy(button,true);
+    try{await request('/admin/users/'+encodeURIComponent(key),{method:'PUT',tenantScoped:false,body:JSON.stringify(payload)});await reloadUsers(false);showNotice('Usuário atualizado.')}
+    catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+
+  function applyBranding(){
+    var brand=state.branding||{};
+    var color=/^#[0-9a-f]{6}$/i.test(brand.primaryColor||'')?brand.primaryColor:'#2563eb';
+    document.documentElement.style.setProperty('--primary',color);
+    el('sidebarBotName').textContent=brand.botName||'Assistente IA';
+    el('sidebarCompany').textContent=brand.companyName||'Operação omnichannel';
+    el('aiBotContext').textContent=(brand.botName||'Assistente virtual')+' · '+(brand.companyName||tenantLabel(activeTenant()||{}));
+    renderLogo(el('sidebarLogo'),brand.logo,true);
+  }
+  function safeImageSource(value){var source=String(value||'').trim();return /^(data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,|https?:\/\/)/i.test(source)?source:''}
+  function renderLogo(target,value,compact){
+    var source=safeImageSource(value);
+    if(source){target.innerHTML='<img alt="Logo da operação" src="'+escapeHtml(source)+'">';return}
+    var text=String(value||'').trim();
+    target.textContent=text?(compact?text.slice(0,2).toUpperCase():text):(compact?'IA':'Sem logo');
+  }
+  function fillIdentity(){
+    var brand=state.branding||{};
+    el('companyName').value=brand.companyName||'';
+    el('botName').value=brand.botName||'';
+    el('language').value=brand.language||'pt-BR';
+    el('primaryColor').value=/^#[0-9a-f]{6}$/i.test(brand.primaryColor||'')?brand.primaryColor:'#2563eb';
+    el('logoValue').value=brand.logo||'';
+    el('welcomeMessage').value=brand.welcomeMessage||'';
+    el('outOfHoursMessage').value=brand.outOfHoursMessage||'';
+    el('transferMessage').value=brand.transferMessage||'';
+    renderLogo(el('logoPreview'),brand.logo,false);
+  }
+  function identityPayload(){
+    return {companyName:el('companyName').value.trim(),botName:el('botName').value.trim(),logo:el('logoValue').value.trim()||null,primaryColor:el('primaryColor').value,language:el('language').value,welcomeMessage:el('welcomeMessage').value.trim(),outOfHoursMessage:el('outOfHoursMessage').value.trim(),transferMessage:el('transferMessage').value.trim()};
+  }
+  async function saveIdentity(){
+    try{await request('/admin/branding',{method:'PUT',body:JSON.stringify(identityPayload())});showNotice('Identidade salva.');await loadBranding()}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function loadBranding(){
+    state.branding=Object.assign({},state.settings,await optionalRequest('/admin/branding',{}));
+    var current=activeTenant();
+    if(current){current.name=state.branding.companyName||current.name;current.botName=state.branding.botName||current.botName;renderTenantSelector();el('tenantSelector').value=selectedTenantId;renderTenants()}
+    applyBranding();fillIdentity();
+  }
+
+  function fillAiSettings(){
+    var prompts=state.branding.prompts||{};
+    var embeddings=state.branding.embeddings||{};
+    el('promptSystem').value=prompts.system||'';
+    el('promptCommercial').value=prompts.commercial||'';
+    el('promptSupport').value=prompts.support||'';
+    el('promptPostSale').value=prompts.postSale||'';
+    el('embeddingProvider').value=embeddings.provider||'local';
+    el('embeddingBaseUrl').value=embeddings.baseUrl||'';
+    el('embeddingModel').value=embeddings.model||'';
+    el('embeddingTimeout').value=embeddings.timeoutMs||30000;
+    el('businessRulesEnabled').checked=state.branding.businessRulesEnabled===true;
+  }
+  async function saveAiSettings(){
+    var payload={businessRulesEnabled:el('businessRulesEnabled').checked,prompts:{system:el('promptSystem').value.trim(),commercial:el('promptCommercial').value.trim(),support:el('promptSupport').value.trim(),postSale:el('promptPostSale').value.trim()},embeddings:{provider:el('embeddingProvider').value,baseUrl:el('embeddingBaseUrl').value.trim()||null,model:el('embeddingModel').value.trim()||null,timeoutMs:numberOr(el('embeddingTimeout').value,30000)}};
+    try{
+      await request('/admin/branding',{method:'PUT',body:JSON.stringify(payload)});
+      if(state.businessRules&&state.businessRules.rules!==undefined){
+        state.businessRules=await request('/admin/business-rules',{method:'PUT',body:JSON.stringify({rules:state.businessRules.rules,enabled:payload.businessRulesEnabled})});
+        renderBusinessRules();
+      }
+      showNotice('Prompts e embeddings salvos.');await loadBranding()
+    }
+    catch(error){showNotice(error.message,true)}
+  }
+
+  function renderProviders(){
+    var body=el('providersBody');
+    if(!state.providers.length){body.innerHTML='<tr><td colspan="9" class="empty">Nenhum provider cadastrado.</td></tr>';return}
+    body.innerHTML=state.providers.map(function(provider){
+      var options=provider.options||{};
+      var key=providerKey(provider);
+      var generic=provider.type==='openai-compatible';
+      var scopeMode=String(provider.scopeMode||(provider.scope&&provider.scope.mode)||'ALL').toUpperCase();
+      var scopedTenantIds=(provider.tenantIds||(provider.scope&&provider.scope.tenantIds)||[]).map(String);
+      var health=(Array.isArray(state.health.providers)?state.health.providers:[]).find(function(item){return String(item.id)===String(provider.id)});
+      var healthLabel=!provider.enabled?'desabilitado':!health?'não testado':health.healthy?'saudável':'indisponível';
+      var healthClass=!provider.enabled?'':health&&health.healthy?'ok':health?'bad':'warn';
+      return '<tr data-key="'+escapeHtml(key)+'">'+
+        '<td><div class="cell-stack"><input data-field="name" value="'+escapeHtml(provider.name||provider.type)+'"><span class="badge">'+escapeHtml(generic?'OpenAI-compatible':provider.type)+'</span></div></td>'+
+        '<td><div class="cell-stack"><label class="check"><input data-field="enabled" type="checkbox" '+(provider.enabled?'checked':'')+'> Habilitado</label><input data-field="priority" type="number" min="1" value="'+escapeHtml(provider.priority||100)+'" title="Prioridade"></div></td>'+
+        '<td><div class="cell-stack"><select data-field="scopeMode"><option value="ALL" '+(scopeMode==='ALL'?'selected':'')+'>Todas</option><option value="SELECTED" '+(scopeMode==='SELECTED'?'selected':'')+'>Empresas selecionadas</option></select><select data-field="tenantIds" class="multi-select" multiple '+(scopeMode==='SELECTED'?'':'disabled')+'>'+tenantOptions(scopedTenantIds)+'</select></div></td>'+
+        '<td><div class="cell-stack"><input data-field="model" value="'+escapeHtml(provider.model||'')+'" placeholder="Modelo"><input data-field="baseUrl" value="'+escapeHtml(provider.baseUrl||'')+'" placeholder="Base URL">'+(generic?'<input data-field="healthPath" value="'+escapeHtml(options.healthPath||'/models')+'" placeholder="Health path">':'')+'</div></td>'+
+        '<td><div class="cell-stack"><input data-field="temperature" type="number" min="0" max="2" step=".1" value="'+escapeHtml(options.temperature==null?.2:options.temperature)+'" title="Temperatura"><input data-field="maxTokens" type="number" min="1" value="'+escapeHtml(options.maxTokens||600)+'" title="Máx. tokens"><input data-field="timeoutMs" type="number" min="1000" value="'+escapeHtml(options.timeoutMs||45000)+'" title="Timeout em ms"></div></td>'+
+        '<td><div class="cell-stack"><input data-field="inputCost" type="number" min="0" step=".0001" value="'+escapeHtml(options.inputCostPerMillion||0)+'" title="Entrada USD"><input data-field="outputCost" type="number" min="0" step=".0001" value="'+escapeHtml(options.outputCostPerMillion||0)+'" title="Saída USD"></div></td>'+
+        '<td><div class="cell-stack"><input data-field="apiKey" type="password" autocomplete="new-password" placeholder="'+(provider.hasApiKey?'Key configurada':'Nova key')+'"><label class="check"><input data-field="removeKey" type="checkbox"> Remover key</label></div></td>'+
+        '<td><span class="badge '+healthClass+'">'+escapeHtml(healthLabel)+'</span>'+(health&&health.latencyMs!=null?'<br><small>'+escapeHtml(health.latencyMs)+' ms</small>':'')+'</td>'+
+        '<td><div class="actions"><button class="btn small" data-action="save-provider" data-key="'+escapeHtml(key)+'">Salvar</button><button class="btn ghost small" data-action="test-provider" data-key="'+escapeHtml(key)+'">Testar</button><button class="btn danger small" data-action="delete-provider" data-key="'+escapeHtml(key)+'">Excluir</button></div></td></tr>';
+    }).join('');
+  }
+  function providerPayload(row,provider){
+    var field=function(name){return row.querySelector('[data-field="'+name+'"]')};
+    var apiKey=field('removeKey').checked?null:(field('apiKey').value||undefined);
+    var scopeMode=field('scopeMode').value,tenantIds=scopeMode==='SELECTED'?selectedValues(field('tenantIds')):[];
+    if(scopeMode==='SELECTED'&&!tenantIds.length)throw new Error('Selecione ao menos uma empresa para o escopo do provider.');
+    return {type:provider.type,name:field('name').value.trim(),enabled:field('enabled').checked,priority:numberOr(field('priority').value,100),scopeMode:scopeMode,tenantIds:tenantIds,model:field('model').value.trim(),baseUrl:field('baseUrl').value.trim()||null,apiKey:apiKey,options:{temperature:numberOr(field('temperature').value,.2),maxTokens:numberOr(field('maxTokens').value,600),inputCostPerMillion:numberOr(field('inputCost').value,0),outputCostPerMillion:numberOr(field('outputCost').value,0),timeoutMs:numberOr(field('timeoutMs').value,45000),healthPath:field('healthPath')?field('healthPath').value.trim()||'/models':undefined}};
+  }
+  async function saveProvider(key,silent){
+    if(!requireCapability('manageProviders'))throw new Error('Sem permissão para administrar providers globais.');
+    var provider=findProvider(key),row=findRow('#providersBody tr',key);
+    if(!provider||!row)throw new Error('Provider não encontrado');
+    var result=await request('/admin/providers/'+encodeURIComponent(key),{method:'PUT',body:JSON.stringify(providerPayload(row,provider))});
+    if(!silent){showNotice('Provider salvo.');await reloadProviders()}
+    return result;
+  }
+  async function testProvider(key){
+    if(!requireCapability('manageProviders'))return;
+    try{await saveProvider(key,true);var result=await request('/admin/providers/'+encodeURIComponent(key)+'/test',{method:'POST',body:'{}'});showNotice('Conexão saudável'+(result.latencyMs?' em '+result.latencyMs+' ms.':'.'));await reloadProviders()}
+    catch(error){showNotice('Falha no provider: '+error.message,true)}
+  }
+  async function reloadProviders(){if(!requireCapability('manageProviders'))return;var results=await Promise.all([request('/admin/providers',{tenantScoped:false}),optionalRequest('/admin/providers/health',{providers:[]})]);state.providers=asList(results[0]&&results[0].providers!==undefined?results[0].providers:results[0]);state.health.providers=Array.isArray(results[1])?results[1]:(results[1].providers||[]);renderProviders();renderOverview();applyCapabilities()}
+  function newProviderDefaults(type){
+    var values={
+      cloudflare:{name:'Cloudflare principal',model:'@cf/meta/llama-3.1-8b-instruct-fp8-fast',url:'',urlPlaceholder:'https://api.cloudflare.com/client/v4/accounts/SEU_ACCOUNT_ID/ai/v1',timeout:5000,inputCost:0.045,outputCost:0.384},
+      openrouter:{name:'OpenRouter fallback',model:'openrouter/free',url:'https://openrouter.ai/api/v1',urlPlaceholder:'https://openrouter.ai/api/v1',timeout:15000,inputCost:0,outputCost:0},
+      gemini:{name:'Gemini fallback',model:'gemini-3.5-flash-lite',url:'https://generativelanguage.googleapis.com/v1beta',urlPlaceholder:'https://generativelanguage.googleapis.com/v1beta',timeout:15000,inputCost:0.3,outputCost:2.5},
+      ollama:{name:'Ollama opcional',model:'llama3.2:3b',url:'http://host.docker.internal:11434',urlPlaceholder:'http://host.docker.internal:11434',timeout:45000,inputCost:0,outputCost:0},
+      'openai-compatible':{name:'OpenAI-compatible',model:'',url:'',urlPlaceholder:'https://api.exemplo/v1',timeout:45000,inputCost:0,outputCost:0}
+    };
+    return values[type]||values['openai-compatible'];
+  }
+  function updateNewProviderDefaults(){
+    var type=el('customProviderType').value,defaults=newProviderDefaults(type);
+    el('customProviderName').value=defaults.name;
+    el('customProviderModel').value=defaults.model;
+    el('customProviderUrl').value=defaults.url;
+    el('customProviderUrl').placeholder=defaults.urlPlaceholder;
+    el('customProviderTimeout').value=defaults.timeout;
+    el('customProviderHealth').disabled=type!=='openai-compatible';
+    el('customProviderKey').placeholder=type==='ollama'?'Opcional':'Obrigatória';
+  }
+  async function createProvider(){
+    if(!requireCapability('manageProviders'))return;
+    var type=el('customProviderType').value;
+    var defaults=newProviderDefaults(type);
+    var scopeMode=el('customProviderScopeMode').value,tenantIds=scopeMode==='SELECTED'?selectedValues(el('customProviderTenantIds')):[];
+    if(scopeMode==='SELECTED'&&!tenantIds.length){showNotice('Selecione ao menos uma empresa para o escopo do provider.',true);return}
+    var payload={type:type,name:el('customProviderName').value.trim(),enabled:el('customProviderEnabled').checked,priority:numberOr(el('customProviderPriority').value,10),scopeMode:scopeMode,tenantIds:tenantIds,model:el('customProviderModel').value.trim(),baseUrl:el('customProviderUrl').value.trim(),apiKey:el('customProviderKey').value||undefined,options:{temperature:numberOr(el('customProviderTemperature').value,.2),maxTokens:numberOr(el('customProviderMaxTokens').value,600),inputCostPerMillion:defaults.inputCost,outputCostPerMillion:defaults.outputCost,timeoutMs:numberOr(el('customProviderTimeout').value,45000),healthPath:type==='openai-compatible'?(el('customProviderHealth').value.trim()||'/models'):undefined}};
+    if(!payload.name||!payload.model||!payload.baseUrl){showNotice('Informe nome, endpoint e modelo.',true);return}
+    if(type!=='ollama'&&!payload.apiKey){showNotice('Informe a API key desta credencial.',true);return}
+    try{await request('/admin/providers',{method:'POST',body:JSON.stringify(payload)});el('customProviderKey').value='';showNotice('Credencial de provider adicionada.');await reloadProviders()}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function deleteProvider(key){
+    if(!requireCapability('manageProviders'))return;
+    var provider=findProvider(key);
+    if(!provider)return;
+    if(!confirm('Excluir o provider '+provider.name+'?'))return;
+    try{await request('/admin/providers/'+encodeURIComponent(provider.id),{method:'DELETE'});showNotice('Provider excluído.');await reloadProviders()}
+    catch(error){showNotice(error.message,true)}
+  }
+
+  function fillChatwoot(){
+    var settings=state.settings||{};
+    var commercialRoute=configuredChatwootSectorRoute(settings,'commercial');
+    var supportRoute=configuredChatwootSectorRoute(settings,'support');
+    var postSaleRoute=configuredChatwootSectorRoute(settings,'postSale');
+    el('cwUrl').value=settings.chatwootUrl||'';
+    el('cwAccount').value=settings.chatwootAccountId||'';
+    el('cwInbox').value=configuredChatwootInboxIds(settings).join('\n');
+    el('cwWebhook').value=tenantWebhookUrl(settings.chatwootWebhookUrl);
+    el('cwTeam').value=settings.chatwootTeamId||'';
+    el('cwAssignee').value=settings.chatwootAssigneeId||'';
+    el('cwCommercialTeam').value=commercialRoute.teamId||'';
+    el('cwCommercialAssignee').value=commercialRoute.assigneeId||'';
+    el('cwSupportTeam').value=supportRoute.teamId||'';
+    el('cwSupportAssignee').value=supportRoute.assigneeId||'';
+    el('cwPostSaleTeam').value=postSaleRoute.teamId||'';
+    el('cwPostSaleAssignee').value=postSaleRoute.assigneeId||'';
+    el('cwToken').value='';el('cwWebhookSecret').value='';el('cwClearToken').checked=false;el('cwClearSecret').checked=false;
+    var hours=settings.businessHours||{};
+    el('timezone').value=hours.timezone||'America/Sao_Paulo';
+    el('schedule').value=JSON.stringify(hours.schedule||{},null,2);
+  }
+  function chatwootPayload(){
+    var schedule,inboxIds=parseChatwootInboxIds(el('cwInbox').value);
+    try{schedule=JSON.parse(el('schedule').value||'{}')}catch(ignore){throw new Error('O JSON do horário comercial é inválido')}
+    return {chatwootUrl:el('cwUrl').value.trim()||null,chatwootAccountId:el('cwAccount').value.trim()||null,chatwootInboxIds:inboxIds,chatwootInboxId:inboxIds[0]||null,chatwootWebhookUrl:el('cwWebhook').value.trim()||null,chatwootApiToken:el('cwClearToken').checked?null:(el('cwToken').value||undefined),webhookSecret:el('cwClearSecret').checked?null:(el('cwWebhookSecret').value||undefined),chatwootTeamId:numberOrNull(el('cwTeam').value),chatwootAssigneeId:numberOrNull(el('cwAssignee').value),chatwootSectorRoutes:chatwootSectorRoutesFromForm(),businessHours:{timezone:el('timezone').value.trim()||'America/Sao_Paulo',schedule:schedule}};
+  }
+  async function saveChatwoot(silent){
+    var result=await request('/admin/settings',{method:'PUT',body:JSON.stringify(chatwootPayload())});
+    if(!silent){showNotice('Integração Chatwoot salva.');await reloadSettings()}
+    return result;
+  }
+  async function testChatwoot(){
+    try{await saveChatwoot(true);var result=await request('/admin/chatwoot/test',{method:'POST',body:'{}'});showNotice('Chatwoot conectado'+(result.latencyMs?' em '+result.latencyMs+' ms.':'.'));await reloadSettings()}
+    catch(error){showNotice('Falha no Chatwoot: '+error.message,true)}
+  }
+  async function reloadSettings(){state.settings=await request('/admin/settings');state.branding=Object.assign({},state.settings,await optionalRequest('/admin/branding',{}));fillChatwoot();applyBranding();renderOverview()}
+
+  function ragMatches(value,source,externalId){return Boolean(value)&&String(value.source||'')===String(source||'')&&String(value.externalId||'')===String(externalId||'')}
+  function clearActiveRag(){state.activeRag=null}
+  function ragEditorRow(doc,index){
+    var active=state.activeRag,chunks=Array.isArray(active&&active.chunks)?active.chunks:[];
+    var source=String(doc.source||''),externalId=String(doc.externalId||''),editorId='rag-editor-'+index;
+    var chunksHtml=chunks.length?chunks.map(function(chunk,chunkIndex){
+      return '<div class="field" style="margin-top:16px"><label>Trecho '+(chunkIndex+1)+' <small class="code">'+escapeHtml(chunk.externalId||chunk.id||'')+'</small></label><textarea rows="8" data-rag-chunk-id="'+escapeHtml(chunk.id)+'">'+escapeHtml(chunk.content)+'</textarea></div>';
+    }).join(''):'<p class="empty">Este documento não possui trechos editáveis.</p>';
+    return '<tr id="'+editorId+'" class="rag-editor-row"><td colspan="7"><div class="rag-inline-editor" role="region" aria-label="Editor de '+escapeHtml(active.title||doc.title||'conhecimento')+'"><div class="card-head"><div><h3>'+escapeHtml(active.title||doc.title||'Visualizar conhecimento')+'</h3><p class="muted">'+escapeHtml(source)+' · '+escapeHtml(externalId)+' · '+chunks.length+' trecho(s)</p></div><div class="inline"><button class="btn ghost small" data-action="export-rag" data-capability="tenantRead">Exportar JSON</button><button class="btn small" data-action="save-rag" data-capability="tenantWrite">Salvar e reindexar</button><button class="btn ghost small" data-action="close-rag" data-capability="tenantRead">Fechar</button></div></div><p class="form-note">Cada bloco abaixo é um trecho realmente consultado pela IA. Você pode corrigir o texto; ao salvar, os embeddings são recriados automaticamente.</p><div class="rag-chunks-editor">'+chunksHtml+'</div></div></td></tr>';
+  }
+  function renderDocuments(){
+    var body=el('ragBody');
+    if(state.activeRag&&!state.documents.some(function(doc){return ragMatches(state.activeRag,doc.source,doc.externalId)}))clearActiveRag();
+    if(!state.documents.length){body.innerHTML='<tr><td colspan="7" class="empty">Nenhuma fonte indexada.</td></tr>';applyCapabilities();return}
+    body.innerHTML=state.documents.map(function(doc,index){
+      var source=String(doc.source||''),externalId=String(doc.externalId||''),expanded=ragMatches(state.activeRag,source,externalId),editorId='rag-editor-'+index;
+      var embeddings=typeof doc.embeddings==='number'?doc.embeddings:(doc.embeddings?'prontos':'ausentes');
+      var healthy=doc.status==='ready'||doc.status==='indexed'||doc.status==='ok';
+      var row='<tr class="rag-document-row '+(expanded?'active':'')+'" data-source="'+escapeHtml(source)+'" data-external-id="'+escapeHtml(externalId)+'"><td><strong>'+escapeHtml(doc.title||'Sem título')+'</strong></td><td><span class="badge">'+escapeHtml(source)+'</span><br><small class="code">'+escapeHtml(externalId)+'</small></td><td>'+escapeHtml(doc.chunks==null?'—':doc.chunks)+'</td><td>'+escapeHtml(embeddings)+'</td><td>'+escapeHtml(displayDate(doc.lastIndexedAt))+'</td><td><span class="badge '+(healthy?'ok':doc.status==='error'?'bad':'warn')+'">'+escapeHtml(doc.status||'desconhecido')+'</span></td><td><div class="actions"><button class="btn small" data-action="view-rag" data-capability="tenantRead" data-source="'+escapeHtml(source)+'" data-external-id="'+escapeHtml(externalId)+'" aria-expanded="'+(expanded?'true':'false')+'" aria-controls="'+editorId+'">Visualizar / editar</button><button class="btn ghost small" data-action="export-rag-row" data-capability="tenantRead" data-source="'+escapeHtml(source)+'" data-external-id="'+escapeHtml(externalId)+'">Exportar</button><button class="btn ghost small" data-action="reindex-rag" data-capability="tenantWrite" data-source="'+escapeHtml(source)+'" data-external-id="'+escapeHtml(externalId)+'">Reindexar</button><button class="btn danger small" data-action="delete-rag" data-capability="tenantWrite" data-source="'+escapeHtml(source)+'" data-external-id="'+escapeHtml(externalId)+'">Excluir</button></div></td></tr>';
+      return row+(expanded?ragEditorRow(doc,index):'');
+    }).join('');
+    applyCapabilities();
+  }
+  async function uploadRag(){
+    var file=el('ragFile').files[0];
+    if(!file){showNotice('Selecione um arquivo.',true);return}
+    var form=new FormData();form.append('file',file);
+    try{var result=await request('/admin/rag/import',{method:'POST',body:form});showNotice(String(result.imported||0)+' chunk(s) indexado(s).');el('ragFile').value='';await reloadRag()}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function reloadRag(){var result=await optionalRequest('/admin/rag/documents',{documents:[]});state.documents=Array.isArray(result)?result:(result.documents||[]);renderDocuments();renderOverview()}
+  async function viewRag(source,externalId){
+    try{
+      var document=await request('/admin/rag/documents/'+encodeURIComponent(source)+'/'+encodeURIComponent(externalId));
+      if(!document||typeof document!=='object')throw new Error('O Gateway não retornou o documento solicitado.');
+      state.activeRag=Object.assign({},document,{source:String(document.source==null?source:document.source),externalId:String(document.externalId==null?externalId:document.externalId),chunks:Array.isArray(document.chunks)?document.chunks:[]});
+      renderDocuments();
+    }catch(error){showNotice(error.message,true)}
+  }
+  function downloadJson(name,value){
+    var blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.href=url;link.download=name;link.click();setTimeout(function(){URL.revokeObjectURL(url)},1000);
+  }
+  async function exportRag(source,externalId){
+    try{var document=source?await request('/admin/rag/documents/'+encodeURIComponent(source)+'/'+encodeURIComponent(externalId)):state.activeRag;if(!document)throw new Error('Abra um documento primeiro.');downloadJson((document.source||'rag')+'-'+(document.externalId||'documento')+'.json',document)}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function saveRag(button){
+    if(!state.activeRag){showNotice('Abra um documento primeiro.',true);return}
+    var editor=el('ragBody').querySelector('.rag-editor-row');
+    if(!editor){clearActiveRag();renderDocuments();showNotice('O documento aberto não está mais disponível.',true);return}
+    var chunks=Array.from(editor.querySelectorAll('[data-rag-chunk-id]')).map(function(area){return {id:area.dataset.ragChunkId,content:area.value.trim()}});
+    if(chunks.some(function(chunk){return !chunk.content})){showNotice('Nenhum trecho pode ficar vazio.',true);return}
+    var source=state.activeRag.source,externalId=state.activeRag.externalId;
+    setBusy(button,true);
+    try{await request('/admin/rag/documents/'+encodeURIComponent(source)+'/'+encodeURIComponent(externalId),{method:'PUT',body:JSON.stringify({chunks:chunks})});showNotice('Conhecimento salvo e reindexado.');await reloadRag();if(state.activeRag)await viewRag(source,externalId)}
+    catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  async function reindexRag(source,externalId){
+    var payload=source?{source:source,externalId:externalId}:{};
+    try{var result=await request('/admin/rag/reindex',{method:'POST',body:JSON.stringify(payload)});showNotice(String(result.reindexed||0)+' item(ns) reindexado(s).');await reloadRag()}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function deleteRag(source,externalId){
+    if(!confirm('Excluir este documento e todos os seus chunks?'))return;
+    try{await request('/admin/rag/documents/'+encodeURIComponent(source)+'/'+encodeURIComponent(externalId),{method:'DELETE'});if(ragMatches(state.activeRag,source,externalId))clearActiveRag();showNotice('Documento excluído.');await reloadRag()}
+    catch(error){showNotice(error.message,true)}
+  }
+
+  function renderTools(){
+    var body=el('toolsBody');
+    if(!state.tools.length){body.innerHTML='<tr><td colspan="6" class="empty">Nenhuma Tool disponível.</td></tr>';return}
+    body.innerHTML=state.tools.map(function(tool){
+      var key=String(tool.name);
+      var healthy=tool.status==='healthy'||tool.status==='ready'||tool.status==='ok';
+      return '<tr data-key="'+escapeHtml(key)+'"><td><strong>'+escapeHtml(tool.name)+'</strong><br><small>'+escapeHtml(tool.description||'')+'</small></td>'+
+        '<td><div class="cell-stack"><label class="check"><input data-field="enabled" type="checkbox" '+(tool.enabled?'checked':'')+'> Habilitada</label><input data-field="endpoint" type="url" value="'+escapeHtml(tool.endpoint||'')+'" placeholder="https://api.exemplo/health"></div></td>'+
+        '<td><input data-field="timeoutMs" type="number" min="1000" value="'+escapeHtml(tool.timeoutMs||10000)+'"></td>'+
+        '<td><div class="cell-stack"><select data-field="authType"><option value="">'+(tool.hasAuth?'Manter atual':'Configurar...')+'</option><option value="none">Sem autenticação</option><option value="bearer">Bearer</option><option value="basic">Basic</option><option value="apiKey">API key em header</option></select><input data-field="authUser" placeholder="Usuário ou header"><input data-field="authSecret" type="password" autocomplete="new-password" placeholder="Token, senha ou valor"></div></td>'+
+        '<td><span class="badge '+(healthy?'ok':tool.status==='error'?'bad':'')+'">'+escapeHtml(tool.status||'não testada')+'</span><br><small>'+escapeHtml(displayDate(tool.updatedAt))+'</small></td>'+
+        '<td><div class="actions"><button class="btn small" data-action="save-tool" data-key="'+escapeHtml(key)+'">Salvar</button><button class="btn ghost small" data-action="test-tool" data-key="'+escapeHtml(key)+'">Testar</button></div></td></tr>';
+    }).join('');
+  }
+  function toolPayload(row){
+    var field=function(name){return row.querySelector('[data-field="'+name+'"]')};
+    var type=field('authType').value;
+    var secret=field('authSecret').value;
+    var user=field('authUser').value.trim();
+    var auth;
+    if(type==='none')auth={type:'none'};
+    if(type==='bearer')auth={type:'bearer',token:secret};
+    if(type==='basic')auth={type:'basic',username:user,password:secret};
+    if(type==='apiKey')auth={type:'apiKey',headerName:user||'X-API-Key',value:secret};
+    return {enabled:field('enabled').checked,endpoint:field('endpoint').value.trim()||undefined,timeoutMs:numberOr(field('timeoutMs').value,10000),auth:auth};
+  }
+  async function saveTool(key,silent){
+    var row=findRow('#toolsBody tr',key);
+    if(!row)throw new Error('Tool não encontrada');
+    var result=await request('/admin/tools/'+encodeURIComponent(key),{method:'PUT',body:JSON.stringify(toolPayload(row))});
+    if(!silent){showNotice('Tool salva.');await reloadTools()}
+    return result;
+  }
+  async function testTool(key){
+    try{await saveTool(key,true);var result=await request('/admin/tools/'+encodeURIComponent(key)+'/test',{method:'POST',body:'{}'});showNotice((result.healthy?'Tool saudável':'Tool indisponível')+(result.latencyMs?' em '+result.latencyMs+' ms.':'.'),!result.healthy);await reloadTools()}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function reloadTools(){var result=await optionalRequest('/admin/tools',{tools:[]});state.tools=Array.isArray(result)?result:(result.tools||[]);renderTools()}
+
+  function renderOperations(){
+    var query=(el('operationSearch').value||'').toLocaleLowerCase();
+    var conversations=state.conversations.filter(function(item){return !query||String(item.externalId||'').toLocaleLowerCase().includes(query)||String((item.messages&&item.messages[0]&&item.messages[0].content)||'').toLocaleLowerCase().includes(query)});
+    el('conversationsBody').innerHTML=conversations.length?conversations.map(function(item){var agent=item.state&&item.state.activeAgent;return '<tr><td><span class="code">'+escapeHtml(item.externalId)+'</span></td><td><span class="badge">'+escapeHtml(item.status)+'</span></td><td>'+escapeHtml(agent||'triagem')+'</td><td>'+escapeHtml(item.lastProvider||'—')+'</td><td>'+escapeHtml(item.messages&&item.messages[0]?item.messages[0].content:'—')+'</td><td>'+escapeHtml(displayDate(item.updatedAt))+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">Nenhuma conversa encontrada.</td></tr>';
+    el('logsBody').innerHTML=state.logs.length?state.logs.map(function(log){var tools=Array.isArray(log.tools)?log.tools.join(', '):'';return '<tr><td>'+escapeHtml(displayDate(log.createdAt))+'</td><td>'+escapeHtml(log.conversationExternalId||'—')+'</td><td>'+escapeHtml(log.provider||'—')+'<br><small>'+escapeHtml(log.model||'')+'</small></td><td>'+escapeHtml(log.inputTokens==null?'—':log.inputTokens)+' / '+escapeHtml(log.outputTokens==null?'—':log.outputTokens)+'</td><td>US$ '+Number(log.estimatedCost||0).toFixed(6)+'</td><td>'+escapeHtml(log.latencyMs?log.latencyMs+' ms':'—')+'<br><small>'+escapeHtml(tools)+'</small></td><td><span class="badge '+(log.level==='error'?'bad':log.level==='warn'?'warn':'ok')+'">'+escapeHtml(log.level||'info')+'</span><br><small>'+escapeHtml(log.message||'')+'</small></td></tr>'}).join(''):'<tr><td colspan="7" class="empty">Nenhum log registrado.</td></tr>';
+  }
+  async function reloadOperations(){
+    try{var results=await Promise.all([request('/admin/conversations'),request('/admin/logs?limit='+encodeURIComponent(el('logLimit').value)),optionalRequest('/admin/business-rules',null)]);state.conversations=results[0]||[];state.logs=results[1]||[];state.businessRules=results[2];renderOperations();renderBusinessRules();renderOverview();showNotice('Operação atualizada.')}
+    catch(error){showNotice(error.message,true)}
+  }
+  function renderBusinessRules(){
+    var response=state.businessRules;
+    var rules=response&&response.rules!==undefined?response.rules:(response&&response.configured!==undefined?null:response);
+    el('businessRulesDocumentEnabled').checked=Boolean(response&&response.enabled);
+    if(response&&response.enabled!==undefined)el('businessRulesEnabled').checked=Boolean(response.enabled);
+    el('businessRulesJson').value=rules==null?'':JSON.stringify(rules,null,2);
+  }
+  async function reloadBusinessRules(notify){
+    try{state.businessRules=await optionalRequest('/admin/business-rules',null);renderBusinessRules();if(notify)showNotice('Regras de negócio recarregadas.')}
+    catch(error){showNotice(error.message,true)}
+  }
+  async function saveBusinessRules(button){
+    if(!requireCapability('tenantWrite'))return;
+    var text=el('businessRulesJson').value.trim(),rules;
+    if(!text){showNotice('Informe um documento JSON de regras.',true);return}
+    try{rules=JSON.parse(text)}catch(ignore){showNotice('O documento de regras não é um JSON válido.',true);return}
+    setBusy(button,true);
+    try{
+      state.businessRules=await request('/admin/business-rules',{method:'PUT',body:JSON.stringify({rules:rules,enabled:el('businessRulesDocumentEnabled').checked})});
+      renderBusinessRules();showNotice('Regras de negócio salvas para a empresa ativa.');
+    }catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  async function clearBusinessRules(button){
+    if(!requireCapability('tenantWrite'))return;
+    if(!confirm('Limpar todas as regras de negócio da empresa ativa?'))return;
+    setBusy(button,true);
+    try{await request('/admin/business-rules',{method:'DELETE'});state.businessRules={configured:false,enabled:false,rules:null};renderBusinessRules();showNotice('Regras de negócio removidas.')}
+    catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  function loadBusinessRulesFile(){
+    var file=el('businessRulesFile').files[0];
+    if(!file){showNotice('Escolha um arquivo JSON.',true);return}
+    if(file.size>5*1024*1024){showNotice('Use um arquivo JSON menor que 5 MB.',true);return}
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{var parsed=JSON.parse(String(reader.result));el('businessRulesJson').value=JSON.stringify(parsed,null,2);showNotice('Arquivo carregado no editor. Revise e salve.')}
+      catch(ignore){showNotice('O arquivo selecionado não contém JSON válido.',true)}
+    };
+    reader.onerror=function(){showNotice('Não foi possível ler o arquivo.',true)};
+    reader.readAsText(file,'utf-8');
+  }
+
+  function asList(value){
+    if(Array.isArray(value))return value;
+    if(value&&Array.isArray(value.items))return value.items;
+    if(value&&Array.isArray(value.data))return value.data;
+    if(value&&Array.isArray(value.results))return value.results;
+    return [];
+  }
+  function compactJson(value){
+    if(value==null||value==='')return '—';
+    if(typeof value==='string')return value.length>280?value.slice(0,277)+'...':value;
+    try{var text=JSON.stringify(value);return text.length>280?text.slice(0,277)+'...':text}
+    catch(ignore){return String(value)}
+  }
+  function improvementStatusBadge(value){
+    var status=String(value||'—');
+    var normalized=status.toUpperCase();
+    var className=/WON|POSITIVE|APPROVED|PUBLISHED|ACTIVE|COMPLETED|READY|VERIFIED|SUCCESS/.test(normalized)?'ok':/LOST|NEGATIVE|REJECTED|FAILED|ERROR/.test(normalized)?'bad':normalized==='—'?'':'warn';
+    return '<span class="badge '+className+'">'+escapeHtml(status)+'</span>';
+  }
+  function normalizePromptSummary(summaryPrompt,promptPayload){
+    var fallback=summaryPrompt&&typeof summaryPrompt==='object'?summaryPrompt:{};
+    var external=promptPayload&&typeof promptPayload==='object'?promptPayload:{};
+    if(external.prompt&&typeof external.prompt==='object')external=external.prompt;
+    if(Array.isArray(external)){
+      external={versions:external};
+    }else if(Array.isArray(external.definitions)){
+      var matching=external.definitions.find(function(item){return String(item.name||item.definitionName||'')==='assistant-bundle'})||external.definitions[0];
+      if(matching)external=Object.assign({},external,matching);
+    }
+    return {
+      definition:external.definition!==undefined?external.definition:(external.definitionName||fallback.definition||fallback.definitionName||null),
+      versions:asList(external.versions!==undefined?external.versions:fallback.versions),
+      releases:asList(external.releases!==undefined?external.releases:fallback.releases),
+      comparisons:asList(external.comparisons!==undefined?external.comparisons:fallback.comparisons),
+      currentBundle:external.currentBundle!==undefined?external.currentBundle:(fallback.currentBundle||null)
+    };
+  }
+  function normalizeImprovementSummary(payload,promptPayload,learningPayload){
+    var summary=payload&&payload.summary&&typeof payload.summary==='object'?payload.summary:(payload||{});
+    var learning=learningPayload&&typeof learningPayload==='object'?learningPayload:{};
+    return {
+      loaded:true,
+      metrics:summary.metrics&&typeof summary.metrics==='object'?summary.metrics:{},
+      conversations:asList(summary.conversations),
+      datasets:asList(summary.datasets),
+      evaluations:asList(summary.evaluations),
+      prompt:normalizePromptSummary(summary.prompt,promptPayload),
+      learning:{reviewQueue:asList(learning.reviewQueue),approvedGuidance:asList(learning.approvedGuidance)}
+    };
+  }
+  function metricEntries(metrics){
+    var labels={won:'Conversas ganhas',lost:'Conversas perdidas',pending:'Conversas pendentes',feedback:'Feedbacks',feedbacks:'Feedbacks',datasets:'Datasets',evaluations:'Avaliações',conversations:'Conversas',averageevaluation:'Nota média das avaliações',conversionrate:'Taxa de conversão',conversion_rate:'Taxa de conversão','semanticcache.entries':'Entradas no cache semântico','semanticcache.hits':'Acertos do cache semântico'};
+    var entries=[];
+    Object.keys(metrics||{}).forEach(function(key){
+      var value=metrics[key];
+      if(value&&typeof value==='object'&&!Array.isArray(value)){
+        Object.keys(value).forEach(function(child){
+          var nested=value[child];
+          if(nested==null||typeof nested!=='object'){
+            var path=String(key+'.'+child).toLowerCase();
+            entries.push({key:key+'.'+child,label:labels[path]||labels[String(child).toLowerCase()]||String(key+' '+child).replace(/[_-]+/g,' '),value:nested});
+          }
+        });
+      }else{
+        entries.push({key:key,label:labels[String(key).toLowerCase()]||String(key).replace(/[_-]+/g,' '),value:Array.isArray(value)?value.length:value});
+      }
+    });
+    return entries;
+  }
+  function renderImprovementMetrics(){
+    var container=el('improvementMetrics');
+    if(!state.improvement.loaded){container.innerHTML='<div class="empty">Abra esta seção para carregar as métricas.</div>';return}
+    var entries=metricEntries(state.improvement.metrics);
+    container.innerHTML=entries.length?entries.map(function(item){
+      var value=typeof item.value==='number'?item.value.toLocaleString():item.value===true?'Sim':item.value===false?'Não':compactJson(item.value);
+      return '<div class="improvement-metric"><span>'+escapeHtml(item.label)+'</span><strong>'+escapeHtml(value)+'</strong></div>';
+    }).join(''):'<div class="empty">Nenhuma métrica registrada ainda.</div>';
+  }
+  function learningRoleLabel(role){return {INTAKE:'Triagem',SALES:'Comercial',CUSTOMER_CARE:'SAC',TECHNICAL:'Técnico'}[String(role||'').toUpperCase()]||String(role||'Triagem')}
+  function renderLearningCandidates(){
+    var learning=state.improvement.learning||{reviewQueue:[],approvedGuidance:[]};
+    var queue=asList(learning.reviewQueue);
+    el('learningCandidatesBody').innerHTML=queue.length?queue.map(function(item){
+      var status=String(item.status||'GATHERING').toUpperCase();
+      var selectable=status==='READY_FOR_REVIEW'&&(!item.requiresGrounding||item.groundingVerified);
+      var evidence=[item.distinctConversationCount+' conversas',item.distinctCustomerCount+' clientes',item.supportingCount+' favoráveis',item.contradictingCount+' contrárias',item.verifiedOutcomeCount+' resultados verificados'].join(' · ');
+      var confidence=Math.round(Number(item.confidence||0)*100)+'%';
+      return '<tr><td>'+(selectable?'<input type="checkbox" data-learning-candidate-id="'+escapeHtml(item.id)+'" aria-label="Selecionar candidato">':'—')+'</td><td><strong>'+escapeHtml(item.title||item.key)+'</strong> <span class="badge">'+escapeHtml(learningRoleLabel(item.agentRole))+'</span><br><small>'+escapeHtml(item.proposal||'')+'</small><br><small class="code">'+escapeHtml(item.kind||'')+'</small></td><td>'+escapeHtml(evidence)+'</td><td>'+escapeHtml(confidence)+'<br>'+improvementStatusBadge(item.risk||'—')+'</td><td>'+improvementStatusBadge(status)+(item.requiresGrounding?'<br><small>Exige fonte oficial; repetição não valida o fato.</small>':'')+'</td></tr>';
+    }).join(''):'<tr><td colspan="5" class="empty">Nenhum candidato precisa de revisão humana agora.</td></tr>';
+    var approved=asList(learning.approvedGuidance);
+    el('approvedLearningGuidance').innerHTML=approved.length?'<strong>Diretrizes aprovadas em uso:</strong> '+approved.map(function(item){return '<span class="badge">'+escapeHtml(learningRoleLabel(item.agentRole))+'</span> '+escapeHtml(item.directive||item.proposal||item.key)}).join(' · '):'Nenhuma diretriz aprovada em uso.';
+  }
+  function conversationIdOf(item){return String(item.externalId||item.conversationExternalId||(item.conversation&&item.conversation.externalId)||item.conversationId||item.id||'')}
+  function renderImprovementConversations(){
+    var conversations=state.improvement.conversations;
+    el('improvementConversationOptions').innerHTML=conversations.map(function(item){var id=conversationIdOf(item);return id?'<option value="'+escapeHtml(id)+'"></option>':''}).join('');
+    el('improvementConversationsBody').innerHTML=conversations.length?conversations.map(function(item){
+      var id=conversationIdOf(item);
+      var outcomes=asList(item.commercialOutcomes);
+      var outcome=item.outcome||item.commercialOutcome||outcomes[0]||{};
+      var outcomeStatus=outcome.status||item.outcomeStatus||item.commercialStatus||'—';
+      var commerce=asList(item.commerceLinks||item.commerce||item.links);
+      var commerceText=commerce.length?commerce.slice(0,3).map(function(link){return [link.kind||link.type,link.externalId||link.reference,link.status].filter(Boolean).join(' · ')}).join(' | '):(item.commerceCount!=null?item.commerceCount+' vínculo(s)':'—');
+      var feedback=asList(item.humanFeedback||item.feedback||item.feedbacks);
+      var feedbackCount=item.feedbackCount!=null?item.feedbackCount:(item.humanFeedback!==undefined||item.feedback!==undefined||item.feedbacks!==undefined?feedback.length:'—');
+      var automaticEvaluations=asList(item.automaticEvaluations);
+      var evaluation=item.latestEvaluation||item.evaluation||automaticEvaluations[0]||state.improvement.evaluations.find(function(entry){return conversationIdOf(entry)===id});
+      var evaluationText=evaluation?[evaluation.status,evaluation.overallScore!=null?('nota '+evaluation.overallScore):null].filter(Boolean).join(' · '):'—';
+      return '<tr><td><span class="code">'+escapeHtml(id||'—')+'</span></td><td>'+improvementStatusBadge(outcomeStatus)+'</td><td>'+escapeHtml(commerceText)+'</td><td>'+escapeHtml(feedbackCount)+'</td><td>'+escapeHtml(evaluationText||'—')+'</td><td>'+(id?'<button class="btn ghost small" data-action="select-improvement-conversation" data-conversation-id="'+escapeHtml(id)+'">Selecionar</button>':'—')+'</td></tr>';
+    }).join(''):'<tr><td colspan="6" class="empty">Nenhuma conversa disponível para melhoria contínua.</td></tr>';
+  }
+  function datasetIdOf(item){return String(item.id||item.datasetId||'')}
+  function versionIdOf(item){return String(item.id||item.versionId||'')}
+  function versionLabel(item){return String(item.version||item.versionNumber||item.number||item.label||versionIdOf(item)||'—')}
+  function renderDatasets(){
+    var rows=[];
+    state.improvement.datasets.forEach(function(dataset){
+      var versions=asList(dataset.versions);
+      if(!versions.length&&dataset.latestVersion)versions=[dataset.latestVersion];
+      if(!versions.length)versions=[null];
+      versions.forEach(function(version){rows.push({dataset:dataset,version:version})});
+    });
+    el('datasetsBody').innerHTML=rows.length?rows.map(function(row){
+      var dataset=row.dataset,version=row.version||{};
+      var datasetId=datasetIdOf(dataset),versionId=versionIdOf(version);
+      var itemCount=version._count&&version._count.examples!=null?version._count.examples:version.itemCount!=null?version.itemCount:version.exampleCount!=null?version.exampleCount:dataset.itemCount!=null?dataset.itemCount:'—';
+      var status=version.status||dataset.status||'—';
+      var date=version.createdAt||dataset.createdAt;
+      var action=datasetId&&versionId&&String(status).toUpperCase()==='DRAFT'?'<button class="btn ghost small" data-action="publish-dataset" data-dataset-id="'+escapeHtml(datasetId)+'" data-version-id="'+escapeHtml(versionId)+'">Publicar</button>':'—';
+      return '<tr><td>'+escapeHtml(dataset.name||dataset.definitionName||datasetId||'—')+'</td><td>'+escapeHtml(row.version?versionLabel(version):'—')+'</td><td>'+escapeHtml(itemCount)+'</td><td>'+improvementStatusBadge(status)+'</td><td>'+escapeHtml(displayDate(date))+'</td><td>'+action+'</td></tr>';
+    }).join(''):'<tr><td colspan="6" class="empty">Nenhum dataset materializado.</td></tr>';
+  }
+  function renderEvaluations(){
+    el('evaluationsBody').innerHTML=state.improvement.evaluations.length?state.improvement.evaluations.map(function(item){
+      var promptVersion=item.promptVersionId||item.versionId||item.promptVersion||'—';
+      var evaluationResult=item.result||item.criteria||item.summary||(item.dimensions||item.recommendations?{dimensions:item.dimensions,recommendations:item.recommendations}:null);
+      var score=item.overallScore!=null?item.overallScore:item.score;
+      return '<tr><td><span class="code">'+escapeHtml(conversationIdOf(item)||'—')+'</span></td><td>'+improvementStatusBadge(item.status||'—')+'</td><td>'+escapeHtml(score==null?'—':score)+'</td><td><span class="json-preview">'+escapeHtml(compactJson(evaluationResult))+'</span></td><td>'+escapeHtml(promptVersion)+'</td><td>'+escapeHtml(displayDate(item.createdAt||item.evaluatedAt))+'</td></tr>';
+    }).join(''):'<tr><td colspan="6" class="empty">Nenhuma avaliação automática executada.</td></tr>';
+  }
+  function promptDefinitionName(){
+    var definition=state.improvement.prompt.definition;
+    if(typeof definition==='string'&&definition)return definition;
+    return definition&&(definition.name||definition.definitionName||definition.id)||'assistant-bundle';
+  }
+  function versionOptions(includeEmpty,approvedOnly){
+    var options=includeEmpty?'<option value="">Selecione...</option>':'';
+    return options+state.improvement.prompt.versions.filter(function(version){
+      return !approvedOnly||String(version.status||version.approvalStatus||'').toUpperCase()==='APPROVED';
+    }).map(function(version){
+      var id=versionIdOf(version);
+      var label=versionLabel(version)+(version.status?' · '+version.status:'');
+      return id?'<option value="'+escapeHtml(id)+'">'+escapeHtml(label)+'</option>':'';
+    }).join('');
+  }
+  function updateVersionSelect(id,includeEmpty,approvedOnly){
+    var select=el(id),previous=select.value;
+    select.innerHTML=versionOptions(includeEmpty,approvedOnly);
+    if(previous&&Array.from(select.options).some(function(option){return option.value===previous}))select.value=previous;
+  }
+  function renderPrompts(){
+    var prompt=state.improvement.prompt;
+    el('promptDefinitionLabel').textContent='Definição: '+promptDefinitionName();
+    var bundle=prompt.currentBundle;
+    el('currentPromptBundle').textContent=bundle?'Bundle atual disponível: '+['system','commercial','support','postSale'].filter(function(key){return typeof bundle[key]==='string'&&bundle[key].trim()}).join(', ')+'.':'Nenhum bundle atual retornado pelo Gateway.';
+    if(bundle&&!prompt.versions.length&&!el('promptVersionContent').value.trim())el('promptVersionContent').value=JSON.stringify(bundle,null,2);
+    el('promptVersionsBody').innerHTML=prompt.versions.length?prompt.versions.map(function(version){
+      var id=versionIdOf(version);
+      var status=version.status||version.approvalStatus||'—';
+      var approved=Boolean(version.approvedAt)||/APPROVED|ACTIVE|PUBLISHED/.test(String(status).toUpperCase());
+      var creator=[version.createdBy,version.approvedBy?('aprovado por '+version.approvedBy):''].filter(Boolean).join(' · ')||'—';
+      var inspect=id&&version.content!=null?'<button class="btn ghost small" data-action="inspect-prompt-version" data-version-id="'+escapeHtml(id)+'">Ver conteúdo</button>':'';
+      var approve=id&&!approved&&String(status).toUpperCase()==='DRAFT'?'<button class="btn small" data-action="approve-prompt-version" data-version-id="'+escapeHtml(id)+'">Aprovar</button>':'';
+      var load=id&&version.content!=null?'<button class="btn ghost small" data-action="load-prompt-content" data-version-id="'+escapeHtml(id)+'">Usar como base</button>':'';
+      var description=version.description||(version.metadata&&version.metadata.description)||'—';
+      return '<tr><td>'+escapeHtml(versionLabel(version))+'<br><small class="code">'+escapeHtml(id||'')+'</small></td><td>'+improvementStatusBadge(status)+'</td><td>'+escapeHtml(description)+'</td><td>'+escapeHtml(creator)+'</td><td>'+escapeHtml(displayDate(version.createdAt))+'</td><td><div class="actions">'+inspect+approve+load+(inspect||approve||load?'':'—')+'</div></td></tr>';
+    }).join(''):'<tr><td colspan="6" class="empty">Nenhuma versão de prompt criada.</td></tr>';
+    ['compareBaseVersion','compareCandidateVersion'].forEach(function(id){updateVersionSelect(id,true,false)});
+    ['releasePrimaryVersion','releaseCanaryVersion'].forEach(function(id){updateVersionSelect(id,true,true)});
+    el('promptReleasesBody').innerHTML=prompt.releases.length?prompt.releases.map(function(release){
+      var primary=release.primaryVersionId||(release.primaryVersion&&versionLabel(release.primaryVersion));
+      var canary=release.canaryVersionId||(release.canaryVersion&&versionLabel(release.canaryVersion));
+      var versions=[primary,canary].filter(Boolean).join(' / ')||'—';
+      return '<tr><td>'+improvementStatusBadge(release.kind||release.status||'—')+'</td><td>'+escapeHtml(versions)+(release.canaryPercent!=null?'<br><small>'+escapeHtml(release.canaryPercent)+'% canário</small>':'')+'</td><td>'+escapeHtml(displayDate(release.createdAt||release.releasedAt))+'</td></tr>';
+    }).join(''):'<tr><td colspan="3" class="empty">Nenhum release registrado.</td></tr>';
+    el('promptComparisonsBody').innerHTML=prompt.comparisons.length?prompt.comparisons.map(function(comparison){
+      var base=comparison.baseVersionId||(comparison.baseVersion&&versionLabel(comparison.baseVersion))||'—';
+      var candidate=comparison.candidateVersionId||(comparison.candidateVersion&&versionLabel(comparison.candidateVersion))||'—';
+      var result=comparison.result||{metrics:comparison.metrics,diff:comparison.diff,decision:comparison.decision};
+      return '<tr><td>'+escapeHtml(base)+'</td><td>'+escapeHtml(candidate)+'</td><td><span class="json-preview">'+escapeHtml(compactJson(result))+'</span></td><td>'+escapeHtml(displayDate(comparison.createdAt||comparison.comparedAt))+'</td></tr>';
+    }).join(''):'<tr><td colspan="4" class="empty">Nenhuma comparação registrada.</td></tr>';
+    updateReleaseControls();
+  }
+  function renderImprovement(){
+    if(!state.improvement)state.improvement={loaded:false,metrics:{},conversations:[],datasets:[],evaluations:[],prompt:{definition:null,versions:[],releases:[],comparisons:[],currentBundle:null}};
+    renderImprovementMetrics();
+    renderLearningCandidates();
+    renderImprovementConversations();
+    renderDatasets();
+    renderEvaluations();
+    renderPrompts();
+  }
+  async function fetchImprovement(){
+    var results=await Promise.all([
+      request('/admin/improvement/summary'),
+      optionalRequest('/admin/prompts',{}),
+      optionalRequest('/admin/learning/candidates?includeBlocked=true&limit=25',{reviewQueue:[],approvedGuidance:[]})
+    ]);
+    state.improvement=normalizeImprovementSummary(results[0],results[1],results[2]);
+    renderImprovement();
+  }
+  async function reloadImprovement(notify,button){
+    setBusy(button,true);
+    try{await fetchImprovement();if(notify)showNotice('Melhoria contínua atualizada.')}
+    catch(error){showNotice('Falha ao carregar melhoria contínua: '+error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  async function runImprovementAction(button,operation,successMessage){
+    var applied=false;
+    setBusy(button,true);
+    try{
+      await operation();
+      applied=true;
+      await fetchImprovement();
+      showNotice(successMessage);
+    }catch(error){
+      showNotice(applied?successMessage+' Não foi possível atualizar o resumo: '+error.message:error.message,true);
+    }finally{setBusy(button,false)}
+  }
+  function selectedLearningCandidateIds(){
+    return Array.from(document.querySelectorAll('[data-learning-candidate-id]:checked')).map(function(input){return input.dataset.learningCandidateId}).filter(Boolean);
+  }
+  function discoverLearning(button){
+    runImprovementAction(button,function(){return request('/admin/learning/discover',{method:'POST',body:JSON.stringify({limit:2000,maxCandidates:32})})},'Conversas analisadas e candidatos consolidados.');
+  }
+  function reviewLearning(button,decision){
+    var ids=selectedLearningCandidateIds();
+    if(!ids.length){showNotice('Selecione pelo menos um candidato pronto para revisão.',true);return}
+    var action=decision==='APPROVE'?'aprovar':'rejeitar';
+    if(!confirm('Deseja '+action+' '+ids.length+' candidato(s) consolidado(s)?'))return;
+    runImprovementAction(button,function(){return request('/admin/learning/candidates/review',{method:'POST',body:JSON.stringify({candidateIds:ids,decision:decision})})},decision==='APPROVE'?'Diretrizes aprovadas e disponíveis para o runtime.':'Candidatos rejeitados.');
+  }
+  function focusedConversationId(){
+    var id=el('improvementConversationId').value.trim();
+    if(!id)throw new Error('Informe ou selecione o ID externo da conversa.');
+    return id;
+  }
+  function linesFrom(id){return el(id).value.split(/\r?\n/).map(function(value){return value.trim()}).filter(Boolean)}
+  function jsonObjectFrom(id){
+    var text=el(id).value.trim();
+    if(!text)return {};
+    var value;
+    try{value=JSON.parse(text)}catch(ignore){throw new Error('A evidência de verificação precisa ser um JSON válido.')}
+    if(!value||Array.isArray(value)||typeof value!=='object')throw new Error('A evidência de verificação precisa ser um objeto JSON.');
+    return value;
+  }
+  function saveOutcome(button){
+    var id,payload;
+    try{
+      id=focusedConversationId();
+      var confidence=Number(el('outcomeConfidence').value);
+      if(!Number.isFinite(confidence)||confidence<0||confidence>1)throw new Error('A confiança deve estar entre 0 e 1.');
+      payload={status:el('outcomeStatus').value,source:'manual',confidence:confidence,evidence:linesFrom('outcomeEvidence')};
+    }catch(error){showNotice(error.message,true);return}
+    runImprovementAction(button,function(){return request('/admin/conversations/'+encodeURIComponent(id)+'/outcome',{method:'PUT',body:JSON.stringify(payload)})},'Resultado comercial salvo.');
+  }
+  function addCommerceLink(button){
+    var id,payload;
+    try{
+      id=focusedConversationId();
+      var externalId=el('commerceExternalId').value.trim(),source=el('commerceSource').value.trim(),status=el('commerceStatus').value.trim();
+      if(!externalId||!source||!status)throw new Error('Informe fonte, ID e status do pedido ou pagamento.');
+      payload={kind:el('commerceKind').value,source:source,externalId:externalId,status:status,currency:el('commerceCurrency').value.trim().toUpperCase()||undefined,verificationStatus:el('commerceVerification').value,verificationEvidence:jsonObjectFrom('commerceEvidence')};
+      if(el('commerceValue').value!==''){var value=Number(el('commerceValue').value);if(!Number.isFinite(value)||value<0)throw new Error('Informe um valor válido.');payload.value=value}
+    }catch(error){showNotice(error.message,true);return}
+    runImprovementAction(button,function(){return request('/admin/conversations/'+encodeURIComponent(id)+'/commerce-links',{method:'POST',body:JSON.stringify(payload)})},'Pedido ou pagamento vinculado.');
+  }
+  function addFeedback(button){
+    var id,payload;
+    try{
+      id=focusedConversationId();
+      payload={verdict:el('feedbackVerdict').value,reviewerId:'admin'};
+      var messageId=el('feedbackMessageId').value.trim(),comment=el('feedbackComment').value.trim(),expected=el('feedbackExpected').value.trim();
+      if(messageId)payload.messageId=messageId;
+      if(comment)payload.comment=comment;
+      if(expected)payload.expectedResponse=expected;
+      if(el('feedbackScore').value!==''){var score=Number(el('feedbackScore').value);if(!Number.isInteger(score)||score< -100||score>100)throw new Error('A nota precisa ser um número inteiro entre -100 e 100.');payload.score=score}
+    }catch(error){showNotice(error.message,true);return}
+    runImprovementAction(button,function(){return request('/admin/conversations/'+encodeURIComponent(id)+'/feedback',{method:'POST',body:JSON.stringify(payload)})},'Feedback humano salvo.');
+  }
+  function evaluateConversation(button){
+    var id;
+    try{id=focusedConversationId()}catch(error){showNotice(error.message,true);return}
+    runImprovementAction(button,function(){return request('/admin/conversations/'+encodeURIComponent(id)+'/evaluate',{method:'POST',body:'{}'})},'Avaliação automática concluída.');
+  }
+  function materializeDataset(button){
+    var name=el('datasetName').value.trim(),notes=el('datasetNotes').value.trim();
+    if(!name){showNotice('Informe um nome para o dataset.',true);return}
+    var payload={name:name,createdBy:'admin'};if(notes)payload.notes=notes;
+    runImprovementAction(button,function(){return request('/admin/datasets/materialize',{method:'POST',body:JSON.stringify(payload)})},'Dataset materializado.');
+  }
+  function publishDataset(button){
+    var datasetId=button.dataset.datasetId,versionId=button.dataset.versionId;
+    if(!datasetId||!versionId){showNotice('Dataset ou versão inválida.',true);return}
+    runImprovementAction(button,function(){return request('/admin/datasets/'+encodeURIComponent(datasetId)+'/versions/'+encodeURIComponent(versionId)+'/publish',{method:'POST',body:JSON.stringify({publishedBy:'admin'})})},'Versão do dataset publicada.');
+  }
+  function createPromptVersion(button){
+    var content=el('promptVersionContent').value,description=el('promptVersionDescription').value.trim();
+    if(!content.trim()){showNotice('Informe o conteúdo da versão candidata.',true);return}
+    var payload={definitionName:'assistant-bundle',content:content,createdBy:'admin'};if(description)payload.description=description;
+    runImprovementAction(button,function(){return request('/admin/prompts/versions',{method:'POST',body:JSON.stringify(payload)})},'Versão candidata criada.');
+  }
+  function approvePromptVersion(button){
+    var id=button.dataset.versionId;if(!id){showNotice('Versão inválida.',true);return}
+    var version=state.improvement.prompt.versions.find(function(item){return versionIdOf(item)===String(id)});
+    var description=version&&(version.description||(version.metadata&&version.metadata.description))||'sem descrição';
+    if(!confirm('Aprovar a versão '+versionLabel(version||{})+' ('+description+')? Use “Ver conteúdo” antes de confirmar. Aprovar não publica automaticamente.'))return;
+    runImprovementAction(button,function(){return request('/admin/prompts/versions/'+encodeURIComponent(id)+'/approve',{method:'POST',body:JSON.stringify({approvedBy:'admin'})})},'Versão de prompt aprovada.');
+  }
+  function inspectPromptVersion(button){
+    var version=state.improvement.prompt.versions.find(function(item){return versionIdOf(item)===String(button.dataset.versionId)});
+    if(!version||version.content==null){showNotice('Conteúdo da versão indisponível.',true);return}
+    el('promptInspectionTitle').textContent='Conteúdo da versão '+versionLabel(version);
+    el('promptInspectionContent').textContent=typeof version.content==='string'?version.content:JSON.stringify(version.content,null,2);
+    el('promptInspection').classList.remove('hidden');el('promptInspection').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  function loadPromptContent(button){
+    var version=state.improvement.prompt.versions.find(function(item){return versionIdOf(item)===String(button.dataset.versionId)});
+    if(!version||version.content==null){showNotice('Conteúdo da versão indisponível.',true);return}
+    el('promptVersionContent').value=typeof version.content==='string'?version.content:JSON.stringify(version.content,null,2);
+    el('promptVersionDescription').value='Baseada na versão '+versionLabel(version);
+    el('promptVersionContent').focus();
+    showNotice('Conteúdo carregado como base de uma nova versão.');
+  }
+  function loadCurrentPromptBundle(){
+    var bundle=state.improvement.prompt.currentBundle;
+    if(!bundle){showNotice('O Gateway ainda não retornou o bundle atual.',true);return}
+    el('promptVersionContent').value=JSON.stringify(bundle,null,2);
+    el('promptVersionDescription').value='Versão criada a partir da configuração atualmente ativa';
+    el('promptVersionContent').focus();
+    showNotice('Configuração atual carregada como candidata.');
+  }
+  function comparePromptVersions(button){
+    var base=el('compareBaseVersion').value,candidate=el('compareCandidateVersion').value;
+    if(!base||!candidate){showNotice('Selecione as versões base e candidata.',true);return}
+    if(base===candidate){showNotice('Escolha duas versões diferentes para comparar.',true);return}
+    var payload={baseVersionId:base,candidateVersionId:candidate,createdBy:'admin'};
+    runImprovementAction(button,function(){return request('/admin/prompts/compare',{method:'POST',body:JSON.stringify(payload)})},'Comparação de prompts registrada.');
+  }
+  function updateReleaseControls(){
+    var canary=el('releaseKind').value==='CANARY';
+    el('releaseCanaryVersion').disabled=!canary;
+    el('releaseCanaryPercent').disabled=!canary;
+  }
+  function releasePrompt(button){
+    var kind=el('releaseKind').value,primary=el('releasePrimaryVersion').value,canary=el('releaseCanaryVersion').value,reason=el('releaseReason').value.trim();
+    if(!primary){showNotice('Selecione a versão principal.',true);return}
+    var payload={definitionName:'assistant-bundle',primaryVersionId:primary,kind:kind,createdBy:'admin'};
+    if(kind==='CANARY'){
+      var percent=Number(el('releaseCanaryPercent').value);
+      if(!canary||canary===primary){showNotice('Selecione uma versão canário diferente da principal.',true);return}
+      if(!Number.isFinite(percent)||percent<1||percent>99){showNotice('O percentual canário deve estar entre 1 e 99.',true);return}
+      payload.canaryVersionId=canary;payload.canaryPercent=percent;
+    }
+    if(reason)payload.reason=reason;
+    runImprovementAction(button,function(){return request('/admin/prompts/release',{method:'POST',body:JSON.stringify(payload)})},'Release de prompt publicado.');
+  }
+  function rollbackPrompt(button){
+    var reason=el('releaseReason').value.trim();
+    var payload={definitionName:'assistant-bundle',createdBy:'admin'};if(reason)payload.reason=reason;
+    runImprovementAction(button,function(){return request('/admin/prompts/rollback',{method:'POST',body:JSON.stringify(payload)})},'Rollback de prompt executado.');
+  }
+
+  function truthyStatus(value){return value===true||value==='ok'||value==='healthy'||(value&&value.healthy===true)||(value&&value.status&&(value.status==='ok'||value.status==='healthy'))}
+  function setupProviderCount(){
+    var configured=state.setup&&state.setup.providersConfigured;
+    if(configured===undefined&&state.setup&&state.setup.infrastructure)configured=state.setup.infrastructure.providersConfigured;
+    if(typeof configured==='number'&&Number.isFinite(configured))return Math.max(0,configured);
+    if(Array.isArray(configured))return configured.length;
+    if(configured===true)return 1;
+    if(configured===false)return 0;
+    if(configured&&typeof configured==='object'){
+      var count=Number(configured.count===undefined?configured.total:configured.count);
+      if(Number.isFinite(count))return Math.max(0,count);
+    }
+    return null;
+  }
+  function providerAppliesToTenant(provider){
+    if(!selectedTenantId)return true;
+    var mode=String(provider.scopeMode||(provider.scope&&provider.scope.mode)||'ALL').toUpperCase();
+    if(mode==='ALL')return true;
+    var ids=(provider.tenantIds||(provider.scope&&provider.scope.tenantIds)||[]).map(String);
+    return Boolean(selectedTenantId)&&ids.includes(String(selectedTenantId));
+  }
+  function renderOverview(){
+    var database=state.health.database===true||truthyStatus(state.setup&&state.setup.infrastructure&&state.setup.infrastructure.database);
+    var canInspectProviders=hasCapability('manageProviders');
+    var configuredForTenant=setupProviderCount();
+    var applicableProviders=canInspectProviders?state.providers.filter(providerAppliesToTenant):[];
+    var applicableIds=applicableProviders.map(function(provider){return String(provider.id||provider.type)});
+    var providerHealth=canInspectProviders?(Array.isArray(state.health.providers)?state.health.providers:[]).filter(function(item){return applicableIds.includes(String(item.id||item.type))}):[];
+    var active=canInspectProviders?applicableProviders.filter(function(provider){return provider.enabled}).length:(configuredForTenant||0);
+    var healthy=canInspectProviders?providerHealth.filter(function(provider){return provider.healthy}).length:0;
+    var providerAvailable=canInspectProviders?active>0&&healthy>0:configuredForTenant!==null&&configuredForTenant>0;
+    var providerMetric=canInspectProviders?String(active):(configuredForTenant===null?'—':String(configuredForTenant));
+    var providerDetail=canInspectProviders?(healthy+' saudável(is)'):(configuredForTenant===null?'status não informado':configuredForTenant>0?'atribuído(s) a esta empresa':'nenhum atribuído a esta empresa');
+    var providerInfrastructureDetail=canInspectProviders?(active?healthy+' de '+active+' saudáveis':'nenhum ativo'):(configuredForTenant===null?'configuração não informada':configuredForTenant>0?configuredForTenant+' provider(s) atribuído(s)':'nenhum provider atribuído');
+    el('metricDatabase').textContent=database?'Online':'Indisponível';
+    el('metricDatabaseDetail').textContent=database?'Conexão validada':'Verifique os logs';
+    el('metricProviders').textContent=providerMetric;
+    el('metricProvidersDetail').textContent=providerDetail;
+    el('metricDocuments').textContent=String(state.documents.length);
+    el('metricConversations').textContent=String(state.conversations.length);
+    var infra=state.setup&&state.setup.infrastructure?state.setup.infrastructure:{};
+    var chatOk=truthyStatus(infra.chatwoot);
+    var chatConfigured=infra.chatwootConfigured===true;
+    el('overviewInfrastructure').innerHTML=infraItem('Gateway',state.health.status==='ok',state.health.status||'desconhecido')+infraItem('Banco de dados',database,database?'conectado':'indisponível')+infraItem('Providers',providerAvailable,providerInfrastructureDetail)+infraItem('Chatwoot',chatOk,chatOk?'conectado e webhook registrado':chatConfigured?'configurado; execute o teste':'não configurado');
+    el('recentActivity').innerHTML=state.logs.length?state.logs.slice(0,5).map(function(log){return '<div style="padding:9px 0;border-bottom:1px solid #eaecf0"><span class="badge '+(log.level==='error'?'bad':'ok')+'">'+escapeHtml(log.level||'info')+'</span> '+escapeHtml(log.message||'Evento')+'<br><small>'+escapeHtml(displayDate(log.createdAt))+'</small></div>'}).join(''):'<div class="empty">Sem atividade recente.</div>';
+  }
+  function infraItem(label,ok,detail){return '<div class="infra-item"><div><strong>'+escapeHtml(label)+'</strong><br><small>'+escapeHtml(detail)+'</small></div>'+statusBadge(ok,'OK','Atenção')+'</div>'}
+  function renderGatewayStatus(){
+    var ok=state.health.status==='ok';
+    el('gatewayStatus').innerHTML='<span class="dot '+(ok?'ok':'bad')+'"></span><span>'+(ok?'Gateway online':'Gateway com falha')+'</span>';
+  }
+
+  function openWizard(){
+    prefillWizard();
+    wizardStep=0;
+    wizardTestResult=null;
+    el('setupOverlay').classList.remove('hidden');
+    renderWizard();
+  }
+  function prefillWizard(){
+    var brand=state.branding||{},settings=state.settings||{};
+    el('wCompany').value=brand.companyName||'';
+    el('wLanguage').value=brand.language||'pt-BR';
+    el('wColor').value=/^#[0-9a-f]{6}$/i.test(brand.primaryColor||'')?brand.primaryColor:'#2563eb';
+    el('wBotName').value=brand.botName||'';
+    el('wPrompt').value=(brand.prompts&&brand.prompts.system)||'';
+    el('wWelcome').value=brand.welcomeMessage||'';
+    el('wCwUrl').value=settings.chatwootUrl||'http://chatwoot:3000';
+    el('wCwAccount').value=settings.chatwootAccountId||'';
+    el('wCwInbox').value=configuredChatwootInboxIds(settings).join('\n');
+    el('wCwWebhook').value=tenantWebhookUrl(settings.chatwootWebhookUrl);
+    el('wCwTeam').value=settings.chatwootTeamId||'';
+    el('wCwToken').value='';
+    el('wImportQuickReplies').checked=false;
+    renderWizardDetection();
+  }
+  function renderWizardDetection(){
+    if(!el('wizardSpreadsheet'))return;
+    var quick=state.setup&&state.setup.quickReplies?state.setup.quickReplies:{};
+    var detected=Boolean(quick.detected);
+    el('wizardSpreadsheet').innerHTML='<div><strong>'+(detected?'Planilha detectada':'Nenhuma planilha detectada')+'</strong><br><small>'+escapeHtml(quick.path||'Verifique o volume configurado no Gateway')+'</small></div><span class="badge '+(detected?'ok':'warn')+'">'+escapeHtml(quick.alreadyImported?'já importada':detected?'disponível':'ausente')+'</span>';
+    el('wImportQuickReplies').disabled=!detected;
+    if(!detected||quick.alreadyImported)el('wImportQuickReplies').checked=false;
+  }
+  function renderWizard(){
+    document.querySelectorAll('.wizard-panel').forEach(function(panel){panel.classList.toggle('active',Number(panel.dataset.step)===wizardStep)});
+    el('wizardProgress').innerHTML=Array.from({length:7},function(ignore,index){return '<span class="step-dot '+(index<wizardStep?'done':index===wizardStep?'active':'')+'"></span>'}).join('');
+    el('wizardSubtitle').textContent='Etapa '+(wizardStep+1)+' de 7';
+    el('wizardBack').style.visibility=wizardStep===0?'hidden':'visible';
+    el('wizardNext').textContent=wizardStep===6?'Concluir configuração':'Continuar';
+    if(wizardStep===6)renderWizardSummary();
+  }
+  function validateWizardStep(){
+    if(wizardStep===0&&!el('wCompany').value.trim())throw new Error('Informe o nome da empresa.')
+    if(wizardStep===1&&!el('wBotName').value.trim())throw new Error('Informe o nome do assistente.')
+    if(wizardStep===3){
+      var inboxIds=parseChatwootInboxIds(el('wCwInbox').value);
+      if(!el('wCwUrl').value.trim()||!el('wCwAccount').value.trim()||!inboxIds.length)throw new Error('Informe URL, Account ID e ao menos um Inbox ID do Chatwoot.')
+    }
+  }
+  function wizardBrandPayload(){return {companyName:el('wCompany').value.trim(),botName:el('wBotName').value.trim(),primaryColor:el('wColor').value,language:el('wLanguage').value,welcomeMessage:el('wWelcome').value.trim(),prompts:{system:el('wPrompt').value.trim()}}}
+  function wizardChatwootPayload(){var inboxIds=parseChatwootInboxIds(el('wCwInbox').value);return {chatwootUrl:el('wCwUrl').value.trim(),chatwootAccountId:el('wCwAccount').value.trim(),chatwootInboxIds:inboxIds,chatwootInboxId:inboxIds[0]||null,chatwootWebhookUrl:el('wCwWebhook').value.trim(),chatwootTeamId:numberOrNull(el('wCwTeam').value),chatwootApiToken:el('wCwToken').value||undefined}}
+  async function persistWizard(){
+    await request('/admin/branding',{method:'PUT',body:JSON.stringify(wizardBrandPayload())});
+    await request('/admin/settings',{method:'PUT',body:JSON.stringify(wizardChatwootPayload())});
+    return null;
+  }
+  async function testWizardInfrastructure(){
+    var container=el('wizardInfrastructure');
+    container.innerHTML='<div class="empty">Salvando e testando conexões...</div>';
+    try{
+      await persistWizard();
+      var result=await request('/admin/setup/test',{method:'POST',body:'{}'});
+      var databaseOk=Boolean(result.database&&result.database.healthy);
+      var providerResults=Array.isArray(result.providers)?result.providers:[];
+      var providersOk=providerResults.length>0&&providerResults.every(function(provider){return provider.healthy});
+      var providerDetail=providerResults.length?providerResults.map(function(provider){return provider.name+': '+(provider.healthy?'OK':provider.error||'falhou')}).join(' · '):'nenhum provider ativo';
+      var chatwootOk=Boolean(result.chatwoot&&result.chatwoot.configured&&result.chatwoot.healthy);
+      var chatwootDetail=result.chatwoot?(result.chatwoot.error||(result.chatwoot.latencyMs?result.chatwoot.latencyMs+' ms':'conectado')):'não configurado';
+      wizardTestResult={healthy:Boolean(result.healthy),database:databaseOk,provider:providersOk,providerDetail:providerDetail,chatwoot:chatwootOk,chatwootDetail:chatwootDetail,testedAt:result.testedAt};
+      container.innerHTML=infraItem('Banco de dados',databaseOk,result.database&&result.database.error?result.database.error:databaseOk?'conectado':'indisponível')+infraItem('Providers ativos',providersOk,providerDetail)+infraItem('Chatwoot',chatwootOk,chatwootDetail);
+      showNotice(result.healthy?'Infraestrutura validada de ponta a ponta.':'Há itens que precisam de atenção.',!result.healthy);
+    }catch(error){container.innerHTML=infraItem('Configuração',false,error.message);showNotice(error.message,true)}
+  }
+  function renderWizardSummary(){
+    var quick=state.setup&&state.setup.quickReplies?state.setup.quickReplies:{};
+    var configured=setupProviderCount();
+    var providerDetail=configured===null?'Atribuição de providers não informada':configured>0?configured+' provider(s) global(is) atribuído(s)':'Nenhum provider global atribuído';
+    var inboxIds=parseChatwootInboxIds(el('wCwInbox').value);
+    el('wizardSummary').innerHTML='<div class="infra-item"><div><strong>Empresa</strong><br><small>'+escapeHtml(el('wCompany').value)+'</small></div><span class="badge ok">configurada</span></div><div class="infra-item"><div><strong>Assistente</strong><br><small>'+escapeHtml(el('wBotName').value)+'</small></div><span class="badge ok">configurado</span></div><div class="infra-item"><div><strong>Provider</strong><br><small>'+providerDetail+'</small></div><span class="badge '+(wizardTestResult&&wizardTestResult.provider?'ok':'warn')+'">'+(wizardTestResult&&wizardTestResult.provider?'testado':'revisar')+'</span></div><div class="infra-item"><div><strong>Chatwoot</strong><br><small>Account '+escapeHtml(el('wCwAccount').value)+' · Inboxes '+escapeHtml(inboxIds.join(', '))+'</small></div><span class="badge '+(wizardTestResult&&wizardTestResult.chatwoot?'ok':'warn')+'">'+(wizardTestResult&&wizardTestResult.chatwoot?'testado':'revisar')+'</span></div><div class="infra-item"><div><strong>Planilha inicial</strong><br><small>'+escapeHtml(quick.path||'Não detectada')+'</small></div><span class="badge">'+(el('wImportQuickReplies').checked?'importar':'não importar')+'</span></div>';
+  }
+  async function finishWizard(){
+    var button=el('wizardNext');setBusy(button,true);
+    try{
+      if(!wizardTestResult||!wizardTestResult.healthy)throw new Error('Execute o teste e corrija todos os itens antes de concluir.')
+      await persistWizard();
+      var payload=Object.assign({},wizardBrandPayload(),wizardChatwootPayload(),{importQuickReplies:el('wImportQuickReplies').checked});
+      var result=await request('/admin/setup/complete',{method:'POST',body:JSON.stringify(payload)});
+      el('setupOverlay').classList.add('hidden');
+      showNotice('Configuração concluída'+(result.imported?' · '+result.imported+' item(ns) importado(s).':'.'));
+      await loadAll();
+    }catch(error){showNotice(error.message,true)}
+    finally{setBusy(button,false)}
+  }
+  function wizardNext(){
+    try{validateWizardStep();if(wizardStep===6){finishWizard();return}wizardStep+=1;renderWizard()}
+    catch(error){showNotice(error.message,true)}
+  }
+  function wizardBack(){if(wizardStep>0){wizardStep-=1;renderWizard()}}
+  function switchPage(page){
+    var globalPageCapability={tenants:'manageTenants',users:'manageUsers'};
+    if(globalPageCapability[page]&&!hasCapability(globalPageCapability[page])){showNotice('Seu usuário não possui acesso a esta administração global.',true);return}
+    if(['identity','ai','chatwoot','knowledge','tools','operations','improvement'].includes(page)&&!hasCapability('tenantRead')){showNotice('Seu usuário não possui acesso às configurações de empresas.',true);return}
+    if(!selectedTenantId&&!globalPageCapability[page]&&page!=='overview'&&!(page==='ai'&&hasCapability('manageProviders'))){showNotice('Cadastre ou selecione uma empresa primeiro.',true);return}
+    currentPage=page;
+    document.querySelectorAll('.page').forEach(function(item){item.classList.toggle('active',item.id==='page-'+page)});
+    document.querySelectorAll('.nav button').forEach(function(button){button.classList.toggle('active',button.dataset.page===page)});
+    var labels={overview:'Visão geral',tenants:'Bots / empresas',users:'Usuários / acessos',identity:'Identidade',ai:'IA e providers / chaves',chatwoot:'Chatwoot',knowledge:'Conhecimento / RAG',tools:'Tools',operations:'Operação / regras',improvement:'Melhoria contínua'};
+    el('pageTitle').textContent=labels[page]||'Console';
+    if(page==='improvement')reloadImprovement(false);
+    if(page==='tenants')reloadTenants(false);
+    if(page==='users')reloadUsers(false);
+  }
+
+  async function handleAction(button){
+    var action=button.dataset.action,key=button.dataset.key;
+    if(isTenantMutationAction(action)&&(!selectedTenantId||!requireCapability('tenantWrite','Seu usuário possui acesso somente para leitura nesta empresa.')))return;
+    if(action==='reload-all'){try{await loadAll();showNotice('Dados atualizados.')}catch(error){showNotice(error.message,true)}}
+    if(action==='save-identity')saveIdentity();
+    if(action==='reload-tenants')reloadTenants(true);
+    if(action==='create-tenant')createTenant(button);
+    if(action==='save-tenant')saveTenant(key,button);
+    if(action==='select-tenant')selectTenantFromButton(button.dataset.tenantId,button.dataset.targetPage);
+    if(action==='reload-users')reloadUsers(true);
+    if(action==='create-user')createUser(button);
+    if(action==='save-user')saveUser(key,button);
+    if(action==='save-ai-settings')saveAiSettings();
+    if(action==='create-provider')createProvider();
+    if(action==='save-provider'){try{await saveProvider(key,false)}catch(error){showNotice(error.message,true)}}
+    if(action==='test-provider')testProvider(key);
+    if(action==='delete-provider')deleteProvider(key);
+    if(action==='save-chatwoot'){try{await saveChatwoot(false)}catch(error){showNotice(error.message,true)}}
+    if(action==='test-chatwoot')testChatwoot();
+    if(action==='upload-rag')uploadRag();
+    if(action==='reload-rag')reloadRag();
+    if(action==='view-rag')viewRag(button.dataset.source,button.dataset.externalId);
+    if(action==='export-rag-row')exportRag(button.dataset.source,button.dataset.externalId);
+    if(action==='export-rag')exportRag();
+    if(action==='save-rag')saveRag(button);
+    if(action==='close-rag'){clearActiveRag();renderDocuments()}
+    if(action==='reindex-all')reindexRag();
+    if(action==='reindex-rag')reindexRag(button.dataset.source,button.dataset.externalId);
+    if(action==='delete-rag')deleteRag(button.dataset.source,button.dataset.externalId);
+    if(action==='reload-tools')reloadTools();
+    if(action==='save-tool'){try{await saveTool(key,false)}catch(error){showNotice(error.message,true)}}
+    if(action==='test-tool')testTool(key);
+    if(action==='reload-operations')reloadOperations();
+    if(action==='reload-business-rules')reloadBusinessRules(true);
+    if(action==='save-business-rules')saveBusinessRules(button);
+    if(action==='clear-business-rules')clearBusinessRules(button);
+    if(action==='load-business-rules-file')loadBusinessRulesFile();
+    if(action==='reload-improvement')reloadImprovement(true,button);
+    if(action==='discover-learning')discoverLearning(button);
+    if(action==='approve-learning')reviewLearning(button,'APPROVE');
+    if(action==='reject-learning')reviewLearning(button,'REJECT');
+    if(action==='select-improvement-conversation'){el('improvementConversationId').value=button.dataset.conversationId||'';showNotice('Conversa selecionada.')}
+    if(action==='save-outcome')saveOutcome(button);
+    if(action==='add-commerce-link')addCommerceLink(button);
+    if(action==='add-feedback')addFeedback(button);
+    if(action==='evaluate-conversation')evaluateConversation(button);
+    if(action==='materialize-dataset')materializeDataset(button);
+    if(action==='publish-dataset')publishDataset(button);
+    if(action==='create-prompt-version')createPromptVersion(button);
+    if(action==='approve-prompt-version')approvePromptVersion(button);
+    if(action==='inspect-prompt-version')inspectPromptVersion(button);
+    if(action==='close-prompt-inspection')el('promptInspection').classList.add('hidden');
+    if(action==='load-prompt-content')loadPromptContent(button);
+    if(action==='load-current-prompt-bundle')loadCurrentPromptBundle();
+    if(action==='compare-prompt-versions')comparePromptVersions(button);
+    if(action==='release-prompt')releasePrompt(button);
+    if(action==='rollback-prompt')rollbackPrompt(button);
+    if(action==='wizard-test')testWizardInfrastructure();
+    if(action==='wizard-next')wizardNext();
+    if(action==='wizard-back')wizardBack();
+  }
+
+  document.addEventListener('click',function(event){
+    var navButton=event.target.closest('[data-page]');if(navButton){switchPage(navButton.dataset.page);return}
+    var actionButton=event.target.closest('[data-action]');if(actionButton){event.preventDefault();handleAction(actionButton)}
+  });
+  el('loginForm').addEventListener('submit',login);
+  el('loginMode').addEventListener('change',updateLoginMode);
+  el('logoutButton').addEventListener('click',logout);
+  el('tenantSelector').addEventListener('change',changeActiveTenant);
+  el('logoValue').addEventListener('input',function(){renderLogo(el('logoPreview'),el('logoValue').value,false)});
+  el('logoFile').addEventListener('change',function(){
+    var file=this.files[0];if(!file)return;if(file.size>1024*1024){showNotice('Use uma imagem menor que 1 MB.',true);this.value='';return}
+    var reader=new FileReader();reader.onload=function(){el('logoValue').value=String(reader.result);renderLogo(el('logoPreview'),reader.result,false)};reader.readAsDataURL(file);
+  });
+  el('primaryColor').addEventListener('input',function(){document.documentElement.style.setProperty('--primary',this.value)});
+  el('operationSearch').addEventListener('input',renderOperations);
+  el('logLimit').addEventListener('change',reloadOperations);
+  el('releaseKind').addEventListener('change',updateReleaseControls);
+  el('customProviderType').addEventListener('change',updateNewProviderDefaults);
+  el('customProviderScopeMode').addEventListener('change',function(){el('customProviderTenantIds').disabled=this.value!=='SELECTED'});
+  el('providersBody').addEventListener('change',function(event){
+    if(event.target.dataset.field!=='scopeMode')return;
+    var row=event.target.closest('tr'),tenants=row&&row.querySelector('[data-field="tenantIds"]');
+    if(tenants)tenants.disabled=event.target.value!=='SELECTED';
+  });
+  el('setupOverlay').addEventListener('input',function(event){if(event.target.closest('.wizard-panel'))wizardTestResult=null});
+  el('gatewayApiBase').value=apiBase;
+  var ssoLoginMeta=document.querySelector('meta[name="sso-login-url"]');
+  var ssoLoginUrl=ssoLoginMeta?String(ssoLoginMeta.content||'').trim():'';
+  if(ssoLoginUrl){el('nexusLoginButton').href=ssoLoginUrl;el('nexusLoginButton').classList.remove('hidden')}
+  updateNewProviderDefaults();
+  updateLoginMode();
+  async function localBootstrapLogin(){
+    var match=location.hash.match(/^#admin-token=([A-Za-z0-9._~-]{16,512})$/);
+    if(match){
+      history.replaceState(null,'',location.pathname+location.search);
+      adminToken=decodeURIComponent(match[1]);
+    }else{
+      try{adminToken=sessionStorage.getItem(adminSessionKey)||''}catch(ignore){}
+    }
+    if(!adminToken)return;
+    try{
+      await completeLogin();
+    }catch(error){
+      adminToken='';
+      try{sessionStorage.removeItem(adminSessionKey)}catch(ignore){}
+      showNotice(error.message==='Sessão expirada ou inválida'?error.message:'O login automático local falhou. Informe o token novamente.',true);
+    }
+  }
+  async function bootstrapAuthentication(){
+    var fragment=String(location.hash||'');
+    if(fragment.indexOf('#nexus-sso=')===0){
+      var encodedCode=fragment.slice('#nexus-sso='.length).split('&')[0];
+      history.replaceState(null,'',location.pathname+location.search);
+      fragment='';
+      var code='';
+      try{code=decodeURIComponent(encodedCode)}catch(ignore){}
+      encodedCode='';
+      if(!code){showNotice('Sessão expirada ou inválida',true);return}
+      try{
+        apiBase=resolveSsoApiBase();
+        el('gatewayApiBase').value=apiBase;
+        try{localStorage.setItem('omnichannel.gatewayApiBase',apiBase)}catch(ignore){}
+        adminToken=await nexusSsoLogin(code);
+        code='';
+        await completeLogin();
+      }catch(error){
+        adminToken='';
+        try{sessionStorage.removeItem(adminSessionKey)}catch(ignore){}
+        showNotice(error.message,true);
+      }finally{code=''}
+      return;
+    }
+    await localBootstrapLogin();
+  }
+  bootstrapAuthentication();
+  </script>
+</body>
+</html>

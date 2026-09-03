@@ -1,0 +1,4 @@
+# The Admin is an atomic single-document application: its CSS and JavaScript are
+# embedded in index.html. Revalidate the complete document on every navigation.
+/*
+  Cache-Control: no-cache, max-age=0, must-revalidate
